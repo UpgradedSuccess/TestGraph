@@ -2,15 +2,26 @@
 #include <stdlib.h>
 #define MAX 30
 
-int world(char, char[MAX][MAX], int[2]);
+typedef struct
+{
+	int pos[2];
+	char text[MAX];
+} evento;
+
+int world(int, int, char, char[MAX][MAX], int[2], evento[MAX]);
+
+
 
 int main()
 {
-	int numX = 0, numY = 0, pj[2] = { 3, 3 }, k, i, coll;
-	char map[MAX][MAX], mov;
+	int numX = 0, numY = 0, pj[2] = { 3, 3 }, k, i, coll, numevent = 0;
+	char map[MAX][MAX], mov, caracter;
+	evento eventos[MAX];
 	FILE* db;
+	FILE* events;
 
 	db = fopen("db.txt", "rb");
+	events = fopen("events.txt", "rb");
 	while (feof(db) == 0)
 	{
 		map[numY][numX] = fgetc(db);
@@ -22,6 +33,22 @@ int main()
 		}
 		numX++;
 	}
+	while (feof(events) == 0)
+	{
+		caracter = fgetc(events);
+		if (caracter == '\n')
+			numevent++;
+	}
+	numevent = numevent / 2;
+	rewind(events);
+	for (k = 0; k < numevent; k++)
+	{
+		fscanf(events, "%d ", &eventos[k].pos[0]);
+		fscanf(events, "%d\n", &eventos[k].pos[1]);
+		fscanf(events, "%[^\n]s", eventos[k].text);
+	}
+	for (k = 0; k < numevent; k++)
+		map[eventos[k].pos[1]][eventos[k].pos[0]] = '!';
 	do
 	{
 		for (i = pj[1]-2; i < pj[1]+2; i++)
@@ -47,7 +74,7 @@ int main()
 		switch (mov = getch())
 		{
 		case 'w':
-			coll = world(mov, map, pj);
+			coll = world(numX, numY, mov, map, pj, eventos);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -59,7 +86,7 @@ int main()
 				break;
 			}
 		case 'a':
-			coll = world(mov, map, pj);
+			coll = world(numX, numY, mov, map, pj, eventos);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -71,7 +98,7 @@ int main()
 				break;
 			}
 		case 's':
-			coll = world(mov, map, pj);
+			coll = world(numX, numY, mov, map, pj, eventos);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -83,7 +110,7 @@ int main()
 				break;
 			}
 		case 'd':
-			coll = world(mov, map, pj);
+			coll = world(numX, numY, mov, map, pj, eventos);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -94,13 +121,18 @@ int main()
 					pj[0]++;
 				break;
 			}
+		case 'e':
+			world(numX, numY, mov, map, pj, eventos);
+			break;
 		}
 		system("cls");
 	} while (1);
 }
 
-int world(char mov, char map[MAX][MAX], int pj[2])
+int world(int numX, int numY, char mov, char map[MAX][MAX], int pj[2], evento eventos[MAX])
 {
+	int k;
+
 	switch (mov)
 	{
 	case 'w':
@@ -123,5 +155,20 @@ int world(char mov, char map[MAX][MAX], int pj[2])
 			return 0;
 		else if (map[pj[1]][pj[0] + 1] == '-')
 			return 1;
+	case 'e':
+		for (k = 0; k < numY; k++)
+		{
+			if (pj[0] == eventos[k].pos[0])
+			{
+				if (pj[1] == eventos[k].pos[1])
+				{
+					system("cls");
+					printf("%s", eventos[k].text);
+					getch();
+					return 1;
+				}
+			}
+		}
+		return 0;
 	}
 }
