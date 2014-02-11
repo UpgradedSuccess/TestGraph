@@ -22,96 +22,18 @@ typedef struct
 
 int world(int, int, char, mapeado [MAX], int[2], evento[MAX], int);
 int lectura(int*, int*, mapeado**, int*, evento**);
+int display(int, int, int, mapeado*, evento*);
 
 int main()
 {
-	int numX = 0, numY = 0, pj[2] = { 3, 3 }, k, i, coll, numevent = 0;
-	char mov;
+	int numX = 0, numY = 0, numevent = 0;
 	evento *eventos = NULL;
 	mapeado *mapp = NULL;
 
 	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
 	lectura(&numX, &numY, &mapp, &numevent, &eventos);
-	do
-	{
-		for (i = pj[1]-VISIONY; i < pj[1] + (VISIONY + 1); i++)
-		{
-			for (k = pj[0] - VISIONX; k < pj[0] + (VISIONX+2); k++)
-			{
-				if (k == pj[0] && i == pj[1])
-				{
-					printf("*");
-					continue;
-				}
-				if (k == (pj[0] + (VISIONX + 1)))
-					printf("\n");
-				else
-				{
-					if (k >= numX || k<0 || i>numY || i<0)
-						continue;
-					else
-						printf("%c", mapp[i].map[k]);
-				}
-			}
-		}
-		printf("\n%s", mapp[pj[1]].desc[pj[0]]);
-		switch (mov = getch())
-		{
-		case 'w':
-			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[1] == 0)
-					pj[1] = numY;
-				else
-					pj[1]--;
-				break;
-			}
-		case 'a':
-			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[0] == 0)
-					pj[0] = numX - 2;
-				else
-					pj[0]--;
-				break;
-			}
-		case 's':
-			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[1] == numY)
-					pj[1] = 0;
-				else
-					pj[1]++;
-				break;
-			}
-		case 'd':
-			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[0] == numX - 2)
-					pj[0] = 0;
-				else
-					pj[0]++;
-				break;
-			}
-		case 'e':
-			world(numX, numY, mov, mapp, pj, eventos, numevent);
-			break;
-		}
-		system("cls");
-	} while (1);
+	display(numX, numY, numevent, mapp, eventos);
 }
 
 int world(int numX, int numY, char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent)
@@ -215,4 +137,92 @@ int lectura(int *numX, int *numY, mapeado **mapp, int *numevent, evento **evento
 	fclose(db);
 	fclose(events);
 	return 0;
+}
+
+int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
+{
+	int k, i, coll, pj[2] = { 3, 3 };
+	char mov;
+
+	for (k = 0; k < numX; k++)
+		mapp[k].map[19] = 0;
+	do
+	{
+		for (i = pj[1] - VISIONY; i < pj[1] + (VISIONY + 1); i++)
+		{
+			for (k = pj[0] - VISIONX; k < pj[0] + (VISIONX + 2); k++)
+			{
+				if (k == pj[0] && i == pj[1])
+				{
+					printf("*");
+					continue;
+				}
+				if (k == (pj[0] + (VISIONX + 1)))
+					printf("\n");
+				else
+				{
+					if (k >= numX || k<0 || i>numY || i<0)
+						continue;
+					else
+						printf("%c", mapp[i].map[k]);
+				}
+			}
+		}
+		printf("\n%s", mapp[pj[1]].desc[pj[0]]);
+		switch (mov = getch())
+		{
+		case 'w':
+			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
+			if (coll == 0)
+				break;
+			else if (coll == 1)
+			{
+				if (pj[1] == 0)
+					pj[1] = numY;
+				else
+					pj[1]--;
+				break;
+			}
+		case 'a':
+			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
+			if (coll == 0)
+				break;
+			else if (coll == 1)
+			{
+				if (pj[0] == 0)
+					pj[0] = numX - 2;
+				else
+					pj[0]--;
+				break;
+			}
+		case 's':
+			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
+			if (coll == 0)
+				break;
+			else if (coll == 1)
+			{
+				if (pj[1] == numY)
+					pj[1] = 0;
+				else
+					pj[1]++;
+				break;
+			}
+		case 'd':
+			coll = world(numX, numY, mov, mapp, pj, eventos, numevent);
+			if (coll == 0)
+				break;
+			else if (coll == 1)
+			{
+				if (pj[0] == numX - 2)
+					pj[0] = 0;
+				else
+					pj[0]++;
+				break;
+			}
+		case 'e':
+			world(numX, numY, mov, mapp, pj, eventos, numevent);
+			break;
+		}
+		system("cls");
+	} while (1);
 }
