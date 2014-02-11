@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #define MAX 30
 
-
-int world(char, char[MAX][MAX], int*[2]);
+int world(char, char[MAX][MAX], int[2]);
 
 int main()
 {
@@ -12,7 +11,6 @@ int main()
 	FILE* db;
 
 	db = fopen("db.txt", "rb");
-
 	while (feof(db) == 0)
 	{
 		map[numY][numX] = fgetc(db);
@@ -26,19 +24,24 @@ int main()
 	}
 	do
 	{
-		for (i = 0; i <= numY; i++)
+		for (i = pj[1]-2; i < pj[1]+2; i++)
 		{
-			for (k = 0; k < numX; k++)
+			for (k = pj[0] - 6; k < pj[0] + 6; k++)
 			{
 				if (k == pj[0] && i == pj[1])
 				{
 					printf("*");
 					continue;
 				}
-				if (k == (numX - 1))
+				if (k == (pj[0] + 5))
 					printf("\n");
 				else
-					printf("%c", map[i][k]);
+				{
+					if (k >= numX || k<0 || i>numY || i<0)
+						continue;
+					else
+						printf("%c", map[i][k]);
+				}
 			}
 		}
 		switch (mov = getch())
