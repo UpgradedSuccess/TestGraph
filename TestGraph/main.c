@@ -3,8 +3,8 @@
 #include <string.h>
 #include <conio.h>
 #define MAX 30
-#define VISIONX 6
-#define VISIONY 3
+#define VISIONX 10
+#define VISIONY 8
 
 typedef struct
 {
@@ -15,9 +15,9 @@ typedef struct
 
 typedef struct
 {
-	char map[MAX];
-	char desc[MAX][30];
-	char text[MAX][100];
+	char map[MAX][MAX];
+	char desc[MAX][MAX][30];
+	char text[MAX][MAX][100];
 } mapeado;
 
 int world(int, int, char, mapeado [MAX], int[2], evento[MAX], int);
@@ -30,7 +30,7 @@ int main()
 	evento *eventos = NULL;
 	mapeado *mapp = NULL;
 
-	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
+	mapp = (mapeado*)calloc(1, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
 	lectura(&numX, &numY, &mapp, &numevent, &eventos);
 	display(numX, numY, numevent, mapp, eventos);
@@ -43,30 +43,30 @@ int world(int numX, int numY, char mov, mapeado mapp[MAX], int pj[2], evento eve
 	switch (mov)
 	{
 	case 'w':
-		if (mapp[pj[1] - 1].map[pj[0]] == '#')
+		if (mapp->map[pj[1] - 1][pj[0]] == '#')
 			return 0;
-		else if (mapp[pj[1] - 1].map[pj[0]] == '-')
+		else if (mapp->map[pj[1] - 1][pj[0]] == '-')
 			return 1;
 		else
 			return 1;
 	case 'a':
-		if (mapp[pj[1]].map[pj[0] - 1] == '#')
+		if (mapp->map[pj[1]][pj[0] - 1] == '#')
 			return 0;
-		else if (mapp[pj[1]].map[pj[0] - 1] == '-')
+		else if (mapp->map[pj[1]][pj[0] - 1] == '-')
 			return 1;
 		else
 			return 1;
 	case 's':
-		if (mapp[pj[1] + 1].map[pj[0]] == '#')
+		if (mapp->map[pj[1] + 1][pj[0]] == '#')
 			return 0;
-		else if (mapp[pj[1] + 1].map[pj[0]] == '-')
+		else if (mapp->map[pj[1] + 1][pj[0]] == '-')
 			return 1;
 		else
 			return 1;
 	case 'd':
-		if (mapp[pj[1]].map[pj[0] + 1] == '#')
+		if (mapp->map[pj[1]][pj[0] + 1] == '#')
 			return 0;
-		else if (mapp[pj[1]].map[pj[0] + 1] == '-')
+		else if (mapp->map[pj[1]][pj[0] + 1] == '-')
 			return 1;
 		else
 			return 1;
@@ -91,27 +91,44 @@ int world(int numX, int numY, char mov, mapeado mapp[MAX], int pj[2], evento eve
 
 int lectura(int *numX, int *numY, mapeado **mapp, int *numevent, evento **eventos)
 {
-	int k;
-	char caracter;
-	FILE* db;
+	int k, nummapas=1;
+	char caracter, nombremapa[10], aux[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } };
+	FILE* mapa[9];
 	FILE* events;
 
-	db = fopen("db.txt", "rt");
 	events = fopen("events.txt", "rt");
-	while (feof(db) == 0)
+
+	do
 	{
-		(*mapp)[(*numY)].map[(*numX)] = fgetc(db);
-		if ((*mapp)[(*numY)].map[(*numX)] == '-')
-			strcpy((*mapp)[(*numY)].desc[(*numX)], "Llanos");
-		else if ((*mapp)[(*numY)].map[(*numX)] == '#')
-			strcpy((*mapp)[(*numY)].desc[(*numX)], "Muro");
-		if ((*mapp)[(*numY)].map[(*numX)] == '\n')
+		strcpy(nombremapa, aux[2]);
+		itoa(nummapas, aux[0], 10);
+		strcat(nombremapa, aux[0]);
+		strcat(nombremapa, aux[1]);
+		mapa[nummapas - 1] = fopen(nombremapa, "rt");
+		if (mapa[nummapas-1] == NULL)
+			break;
+		nummapas++;
+	} while (1);
+
+	for (k = 0; k < nummapas; k++)
+	{
+		while (feof(mapa[0]) == 0)
 		{
-			(*numY)++;
-			(*numX) = 0;
-			continue;
+			(*mapp)->map[(*numY)][(*numX)] = fgetc(mapa[0]);
+			if ((*mapp)->map[(*numY)][(*numX)] == '-')
+				strcpy((*mapp)->desc[(*numY)][(*numX)], "Llanos");
+			else if ((*mapp)->map[(*numY)][(*numX)] == '#')
+				strcpy((*mapp)->desc[(*numY)][(*numX)], "Muro");
+			else if ((*mapp)->map[(*numY)][(*numX)] == 'E')
+				strcpy((*mapp)->desc[(*numY)][(*numX)], "Puerta");
+			if ((*mapp)->map[(*numY)][(*numX)] == '\n')
+			{
+				(*numY)++;
+				(*numX) = 0;
+				continue;
+			}
+			(*numX)++;
 		}
-		(*numX)++;
 	}
 	while (feof(events) == 0)
 	{
@@ -130,11 +147,11 @@ int lectura(int *numX, int *numY, mapeado **mapp, int *numevent, evento **evento
 	}
 	for (k = 0; k < (*numevent); k++)
 	{
-		(*mapp)[(*eventos)[k].pos[1]].map[(*eventos)[k].pos[0]] = '!';
-		strcpy((*mapp)[(*eventos)[k].pos[1]].desc[(*eventos)[k].pos[0]], (*eventos)[k].name);
-		strcpy((*mapp)[(*eventos)[k].pos[1]].text[(*eventos)[k].pos[0]], (*eventos)[k].text);
+		(*mapp)->map[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]] = '!';
+		strcpy((*mapp)->desc[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].name);
+		strcpy((*mapp)->text[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].text);
 	}
-	fclose(db);
+	fclose(mapa[0]);
 	fclose(events);
 	return 0;
 }
@@ -145,7 +162,7 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 	char mov;
 
 	for (k = 0; k < numX; k++)
-		mapp[k].map[19] = 0;
+		mapp->map[k][19] = 0;
 	do
 	{
 		for (i = pj[1] - VISIONY; i < pj[1] + (VISIONY + 1); i++)
@@ -164,11 +181,11 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 					if (k >= numX || k<0 || i>numY || i<0)
 						continue;
 					else
-						printf("%c", mapp[i].map[k]);
+						printf("%c", mapp->map[i][k]);
 				}
 			}
 		}
-		printf("\n%s", mapp[pj[1]].desc[pj[0]]);
+		printf("\n%s", mapp->desc[pj[1]][pj[0]]);
 		switch (mov = getch())
 		{
 		case 'w':
@@ -177,9 +194,7 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 				break;
 			else if (coll == 1)
 			{
-				if (pj[1] == 0)
-					pj[1] = numY;
-				else
+				if (pj[1] != 0)
 					pj[1]--;
 				break;
 			}
@@ -189,9 +204,7 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 				break;
 			else if (coll == 1)
 			{
-				if (pj[0] == 0)
-					pj[0] = numX - 2;
-				else
+				if (pj[0] != 0)
 					pj[0]--;
 				break;
 			}
@@ -201,9 +214,7 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 				break;
 			else if (coll == 1)
 			{
-				if (pj[1] == numY)
-					pj[1] = 0;
-				else
+				if (pj[1] != numY)
 					pj[1]++;
 				break;
 			}
@@ -213,9 +224,7 @@ int display(int numX, int numY, int numevent, mapeado *mapp, evento *eventos)
 				break;
 			else if (coll == 1)
 			{
-				if (pj[0] == numX - 2)
-					pj[0] = 0;
-				else
+				if (pj[0] != numX - 2)
 					pj[0]++;
 				break;
 			}
