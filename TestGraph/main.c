@@ -18,27 +18,28 @@ typedef struct
 	char map[MAX][MAX];
 	char desc[MAX][MAX][30];
 	char text[MAX][MAX][100];
+	int dest[MAX][MAX][3];
 } mapeado;
 
-int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*);
-int lectura(int[9][2], mapeado*, int*, evento**);
-int display(int[9][2], int, mapeado*, evento*);
+int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*, int, int[10][2][3]);
+int lectura(int[9][2], mapeado*, int*, evento**, int*, int[10][2][3]);
+int display(int[9][2], int, mapeado*, evento*, int, int[10][2][3]);
 
 int main()
 {
-	int posicion[9][2], numevent = 0;
+	int posicion[9][2], numevent = 0, numlinks=0, link[10][2][3];
 	evento *eventos = NULL;
 	mapeado *mapp = NULL;
 
 	mapp = (mapeado*)calloc(10, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
-	lectura(posicion, mapp, &numevent, &eventos);
-	display(posicion, numevent, mapp, eventos);
+	lectura(posicion, mapp, &numevent, &eventos, &numlinks, link);
+	display(posicion, numevent, mapp, eventos, numlinks, link);
 }
 
-int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent, int *mapactual)
+int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent, int *mapactual, int numlinks, int link[10][2][3])
 {
-	int k;
+	int k, aux[3];
 
 	switch (mov)
 	{
@@ -90,34 +91,39 @@ int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eve
 		}
 		else if (mapp[*mapactual].map[pj[1]][pj[0]] == 'E')
 		{
-			if (*mapactual == 0)
-			{
-				*mapactual = 1;
-				pj[1] = 6;
-				pj[0] = 0;
-				return 0;
-			}
-			else if(*mapactual == 1)
-			{
-				*mapactual = 0;
-				pj[1] = 6;
-				pj[0] = posicion[0][0] - 2;
-				return 0;
-			}
+			aux[0] = mapp[*mapactual].dest[pj[1]][pj[0]][0];
+			aux[1] = mapp[*mapactual].dest[pj[1]][pj[0]][1];
+			aux[2] = mapp[*mapactual].dest[pj[1]][pj[0]][2];
+			*mapactual = aux[0];
+			pj[1] = aux[1];
+			pj[0] = aux[2];
 		}
 		return 0;
 	}
 }
 
-int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos)
+int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, int *numlinks, int link[10][2][3])
 {
 	int k, i, nummapas=0;
 	char caracter, nombremapa[10], aux[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } };
 	FILE* mapa[3];
 	FILE* events;
+	FILE* links;
 
+	links = fopen("links.txt", "rt");
+	while (feof(links) == 0)
+	{
+		caracter = fgetc(links);
+		if (caracter == '\n')
+			(*numlinks)++;
+	}
+	rewind(links);
+	for (k = 0; k < (*numlinks); k++)
+	{
+		fscanf(links, "%d %d %d ", &link[k][0][0], &link[k][0][1], &link[k][0][2]);
+		fscanf(links, "%d %d %d\n", &link[k][1][0], &link[k][1][1], &link[k][1][2]);
+	}
 	events = fopen("events.txt", "rt");
-
 	do
 	{
 		strcpy(nombremapa, aux[2]);
@@ -146,7 +152,24 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos)
 			else if (mapp[k].map[posicion[k][1]][posicion[k][0]] == '#')
 				strcpy(mapp[k].desc[posicion[k][1]][posicion[k][0]], "Muro");
 			else if (mapp[k].map[posicion[k][1]][posicion[k][0]] == 'E')
+			{
 				strcpy(mapp[k].desc[posicion[k][1]][posicion[k][0]], "Puerta");
+				for (i = 0; i < (*numlinks); i++)
+				{
+					if (link[i][0][0] == k && link[i][0][1] == posicion[k][1] && link[i][0][2] == posicion[k][0])
+					{
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][0] = link[i][1][0];
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][1] = link[i][1][1];
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][2] = link[i][1][2];
+					}
+					else if (link[i][1][0] == k && link[i][1][1] == posicion[k][1] && link[i][1][2] == posicion[k][0])
+					{
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][0] = link[i][0][0];
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][1] = link[i][0][1];
+						mapp[k].dest[posicion[k][1]][posicion[k][0]][2] = link[i][0][2];
+					}
+				}
+			}
 			if (mapp[k].map[posicion[k][1]][posicion[k][0]] == '\n')
 			{
 				posicion[k][1]++;
@@ -180,14 +203,14 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos)
 	fclose(events);
 	for (k = 0; k < (*numevent); k++)
 	{
-		mapp[k].map[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]] = '!';
-		strcpy(mapp[k].desc[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].name);
-		strcpy(mapp[k].text[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].text);
+		mapp[0].map[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]] = '!';
+		strcpy(mapp[0].desc[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].name);
+		strcpy(mapp[0].text[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].text);
 	}
 	return 0;
 }
 
-int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
+int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, int numlinks, int link[10][2][3])
 {
 	int k, i, coll, pj[2] = { 3, 3 }, mapactual=0;
 	char mov;
@@ -220,7 +243,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 		switch (mov = getch())
 		{
 		case 'w':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -230,7 +253,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 				break;
 			}
 		case 'a':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -240,7 +263,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 				break;
 			}
 		case 's':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -250,7 +273,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 				break;
 			}
 		case 'd':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -260,7 +283,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 				break;
 			}
 		case 'e':
-			world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
+			world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
 			break;
 		}
 		system("cls");
