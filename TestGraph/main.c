@@ -21,23 +21,25 @@ typedef struct
 	int dest[MAX][MAX][3];
 } mapeado;
 
-int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*, int, int[10][2][3]);
+int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*);
 int lectura(int[9][2], mapeado*, int*, evento**, int*, int[10][2][3]);
-int display(int[9][2], int, mapeado*, evento*, int, int[10][2][3]);
+int display(int[9][2], int, mapeado*, evento*);
 
 int main()
 {
-	int posicion[9][2], numevent = 0, numlinks=0, link[10][2][3];
+	int posicion[9][2], numevent = 0, numlinks=0, nummapas=0, link[10][2][3];
 	evento *eventos = NULL;
 	mapeado *mapp = NULL;
 
-	mapp = (mapeado*)calloc(10, sizeof(mapeado));
+	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
-	lectura(posicion, mapp, &numevent, &eventos, &numlinks, link);
-	display(posicion, numevent, mapp, eventos, numlinks, link);
+	lectura(posicion, mapp, &numevent, &eventos, &numlinks, link, &nummapas);
+	mapp = (mapeado*)realloc(mapp, nummapas+1* sizeof(mapeado));
+	eventos = (evento*)realloc(eventos, numevent+1* sizeof(evento));
+	display(posicion, numevent, mapp, eventos);
 }
 
-int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent, int *mapactual, int numlinks, int link[10][2][3])
+int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent, int *mapactual)
 {
 	int k, aux[3];
 
@@ -81,7 +83,7 @@ int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eve
 					if (pj[1] == eventos[k].pos[1])
 					{
 						printf("\n\n\n");
-						printf("%s:\n", eventos[k].name);
+						printf("%s:\n",eventos[k].name);
 						printf("-%s\n", eventos[k].text);
 						getch();
 						return 1;
@@ -102,11 +104,11 @@ int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eve
 	}
 }
 
-int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, int *numlinks, int link[10][2][3])
+int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, int *numlinks, int link[10][2][3], int *nummapas)
 {
-	int k, i, nummapas=0;
+	int k, i;
 	char caracter, nombremapa[10], aux[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } };
-	FILE* mapa[3];
+	FILE* mapa[10];
 	FILE* events;
 	FILE* links;
 
@@ -127,23 +129,18 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 	do
 	{
 		strcpy(nombremapa, aux[2]);
-		itoa(nummapas+1, aux[0], 10);
+		itoa((*nummapas)+1, aux[0], 10);
 		strcat(nombremapa, aux[0]);
 		strcat(nombremapa, aux[1]);
-		mapa[nummapas] = fopen(nombremapa, "rt");
-		if (mapa[nummapas] == NULL)
+		mapa[(*nummapas)] = fopen(nombremapa, "rt");
+		if (mapa[(*nummapas)] == NULL)
 			break;
-		nummapas++;
+		(*nummapas)++;
 	} while (1);
-
-	for (k = 0; k < nummapas; k++)
+	for (k = 0; k < (*nummapas); k++)
 	{
 		posicion[k][0] = 0;
 		posicion[k][1] = 0;
-	}
-
-	for (k = 0; k < nummapas; k++)
-	{
 		while (feof(mapa[k]) == 0)
 		{
 			mapp[k].map[posicion[k][1]][posicion[k][0]] = fgetc(mapa[k]);
@@ -178,13 +175,11 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 			}
 			posicion[k][0]++;
 		}
+		fclose(mapa[k]);
 	}
-	for (i = 0; i < nummapas; i++)
+	for (i = 0; i < (*nummapas); i++)
 		for (k = 0; k < posicion[i][1]; k++)
 			mapp[i].map[k][posicion[i][0]-1] = 0;
-	for (k = 0; k < nummapas; k++)
-		fclose(mapa[k]);
-
 	while (feof(events) == 0)
 	{
 		caracter = fgetc(events);
@@ -210,7 +205,7 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 	return 0;
 }
 
-int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, int numlinks, int link[10][2][3])
+int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 {
 	int k, i, coll, pj[2] = { 3, 3 }, mapactual=0;
 	char mov;
@@ -239,11 +234,11 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, in
 				}
 			}
 		}
-		printf("\n%s", mapp[mapactual].desc[pj[1]][pj[0]]);
+		printf("\nMapa: %d\n%s", mapactual+1, mapp[mapactual].desc[pj[1]][pj[0]]);
 		switch (mov = getch())
 		{
 		case 'w':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -253,7 +248,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, in
 				break;
 			}
 		case 'a':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -263,7 +258,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, in
 				break;
 			}
 		case 's':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -273,7 +268,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, in
 				break;
 			}
 		case 'd':
-			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
+			coll = world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
 			if (coll == 0)
 				break;
 			else if (coll == 1)
@@ -283,7 +278,7 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos, in
 				break;
 			}
 		case 'e':
-			world(posicion, mov, mapp, pj, eventos, numevent, &mapactual, numlinks, link);
+			world(posicion, mov, mapp, pj, eventos, numevent, &mapactual);
 			break;
 		}
 		system("cls");
