@@ -22,7 +22,7 @@ typedef struct
 } mapeado;
 
 int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*);
-int lectura(int[9][2], mapeado*, int*, evento**, int*, int[10][2][3]);
+int lectura(int[9][2], mapeado*, int*, evento**, int*, int[10][2][3], int*);
 int display(int[9][2], int, mapeado*, evento*);
 
 int main()
@@ -34,8 +34,8 @@ int main()
 	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
 	lectura(posicion, mapp, &numevent, &eventos, &numlinks, link, &nummapas);
-	mapp = (mapeado*)realloc(mapp, nummapas+1* sizeof(mapeado));
-	eventos = (evento*)realloc(eventos, numevent+1* sizeof(evento));
+	mapp = (mapeado*)realloc(mapp, (nummapas+1)* sizeof(mapeado));
+	eventos = (evento*)realloc(eventos, (numevent+1)* sizeof(evento));
 	display(posicion, numevent, mapp, eventos);
 }
 
@@ -207,11 +207,13 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 
 int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 {
-	int k, i, coll, pj[2] = { 3, 3 }, mapactual=0;
-	char mov;
+	int k, i, coll, pj[2] = { 3, 3 }, mapactual = 0, cont1, cont2;
+	char mov, auxmap[MAX][MAX];
 
 	do
 	{
+		cont1 = 0;
+		cont2 = 0;
 		k = 0;
 		i = 0;
 		for (i = (pj[1] - VISIONY); i < pj[1] + (VISIONY + 1); i++)
@@ -220,19 +222,27 @@ int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
 			{
 				if (k == pj[0] && i == pj[1])
 				{
-					printf("*");
+					auxmap[cont1][cont2] = '*';
+					cont2++;
 					continue;
 				}
 				if (k == (pj[0] + (VISIONX + 1)))
-					printf("\n");
+					auxmap[cont1][cont2] = '\0';
 				else
 				{
-					if (k >= posicion[mapactual][0] || k<0 || i>posicion[mapactual][1] || i<0)
+					if (k >= posicion[mapactual][0] || k<0 || i>posicion[mapactual][1] || i < 0)
 						continue;
 					else
-						printf("%c", mapp[mapactual].map[i][k]);
+						auxmap[cont1][cont2] = mapp[mapactual].map[i][k];
 				}
+				cont2++;
 			}
+			cont2 = 0;
+			cont1++;
+		}
+		for (k = 0; k < VISIONX+1; k++)
+		{
+			puts(auxmap[k]);
 		}
 		printf("\nMapa: %d\n%s", mapactual+1, mapp[mapactual].desc[pj[1]][pj[0]]);
 		switch (mov = getch())
