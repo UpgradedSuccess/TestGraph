@@ -8,9 +8,9 @@
 
 typedef struct
 {
-	int pos[2];
-	char name[30];
-	char text[100];
+	int pos[MAX][2];
+	char name[MAX][30];
+	char text[MAX][100];
 } evento;
 
 typedef struct
@@ -21,25 +21,25 @@ typedef struct
 	int dest[MAX][MAX][3];
 } mapeado;
 
-int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int, int*);
-int lectura(int[9][2], mapeado*, int*, evento**, int*, int[10][2][3], int*);
-int display(int[9][2], int, mapeado*, evento*);
+int world(int[9][2], char, mapeado[MAX], int[2], evento[MAX], int[MAX], int*);
+int lectura(int[9][2], mapeado*, int[MAX], evento*, int*, int[10][2][3], int*);
+int display(int[9][2], int[MAX], mapeado*, evento*);
 
 int main()
 {
-	int posicion[9][2], numevent = 0, numlinks=0, nummapas=0, link[10][2][3];
+	int posicion[9][2], numevent[MAX], numlinks=0, nummapas=0, link[10][2][3];
 	evento *eventos = NULL;
 	mapeado *mapp = NULL;
 
 	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
 	eventos = (evento*)calloc(MAX, sizeof(evento));
-	lectura(posicion, mapp, &numevent, &eventos, &numlinks, link, &nummapas);
+	lectura(posicion, mapp, numevent, eventos, &numlinks, link, &nummapas);
 	mapp = (mapeado*)realloc(mapp, (nummapas+1)* sizeof(mapeado));
-	eventos = (evento*)realloc(eventos, (numevent+1)* sizeof(evento));
+	eventos = (evento*)realloc(eventos, (nummapas+1)* sizeof(evento));
 	display(posicion, numevent, mapp, eventos);
 }
 
-int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent, int *mapactual)
+int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], evento eventos[MAX], int numevent[MAX], int *mapactual)
 {
 	int k, aux[3];
 
@@ -76,15 +76,15 @@ int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eve
 	case 'e':
 		if (mapp[*mapactual].map[pj[1]][pj[0]] == '!')
 		{
-			for (k = 0; k < numevent; k++)
+			for (k = 0; k < numevent[*mapactual]; k++)
 			{
-				if (pj[0] == eventos[k].pos[0])
+				if (pj[0] == eventos[*mapactual].pos[k][0])
 				{
-					if (pj[1] == eventos[k].pos[1])
+					if (pj[1] == eventos[*mapactual].pos[k][1])
 					{
 						printf("\n\n\n");
-						printf("%s:\n",eventos[k].name);
-						printf("-%s\n", eventos[k].text);
+						printf("%s:\n", eventos[*mapactual].name[k]);
+						printf("-%s\n", eventos[*mapactual].text[k]);
 						getch();
 						return 1;
 					}
@@ -104,12 +104,12 @@ int world(int posicion[2][2], char mov, mapeado mapp[MAX], int pj[2], evento eve
 	}
 }
 
-int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, int *numlinks, int link[10][2][3], int *nummapas)
+int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], evento *eventos, int *numlinks, int link[10][2][3], int *nummapas)
 {
 	int k, i;
-	char caracter, nombremapa[10], aux[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } };
+	char caracter, nombremapa[10], nombrevento[15], aux1[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } }, aux2[3][7] = { { '0', '0', '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0', '\0', '\0' }, { 'e', 'v', 'e', 'n', 't', 's', '\0' } };
 	FILE* mapa[10];
-	FILE* events;
+	FILE* events[10];
 	FILE* links;
 
 	links = fopen("links.txt", "rt");
@@ -125,18 +125,27 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 		fscanf(links, "%d %d %d ", &link[k][0][0], &link[k][0][1], &link[k][0][2]);
 		fscanf(links, "%d %d %d\n", &link[k][1][0], &link[k][1][1], &link[k][1][2]);
 	}
-	events = fopen("events.txt", "rt");
 	do
 	{
-		strcpy(nombremapa, aux[2]);
-		itoa((*nummapas)+1, aux[0], 10);
-		strcat(nombremapa, aux[0]);
-		strcat(nombremapa, aux[1]);
+		strcpy(nombremapa, aux1[2]);
+		itoa((*nummapas) + 1, aux1[0], 10);
+		strcat(nombremapa, aux1[0]);
+		strcat(nombremapa, aux1[1]);
 		mapa[(*nummapas)] = fopen(nombremapa, "rt");
 		if (mapa[(*nummapas)] == NULL)
 			break;
 		(*nummapas)++;
 	} while (1);
+
+	for (k = 0; k < (*nummapas);k++)
+	{
+		strcpy(nombrevento, aux2[2]);
+		itoa(k+1, aux2[0], 10);
+		strcat(nombrevento, aux2[0]);
+		strcat(nombrevento, aux2[1]);
+		events[k] = fopen(nombrevento, "rt");
+	}
+	
 	for (k = 0; k < (*nummapas); k++)
 	{
 		posicion[k][0] = 0;
@@ -180,32 +189,36 @@ int lectura(int posicion[9][2], mapeado *mapp, int *numevent, evento **eventos, 
 	for (i = 0; i < (*nummapas); i++)
 		for (k = 0; k < posicion[i][1]; k++)
 			mapp[i].map[k][posicion[i][0]-1] = 0;
-	while (feof(events) == 0)
+	for (i = 0; i < (*nummapas); i++)
 	{
-		caracter = fgetc(events);
-		if (caracter == '\n')
-			(*numevent)++;
-	}
-	(*numevent) = (*numevent) / 3;
-	rewind(events);
-	for (k = 0; k < (*numevent); k++)
-	{
-		fscanf(events, "%d %d\n", &(*eventos)[k].pos[0], &(*eventos)[k].pos[1]);
-		fscanf(events, "%[^\n]s", (*eventos)[k].name);
-		caracter = fgetc(events);
-		fscanf(events, "%[^\n]s", (*eventos)[k].text);
-	}
-	fclose(events);
-	for (k = 0; k < (*numevent); k++)
-	{
-		mapp[0].map[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]] = '!';
-		strcpy(mapp[0].desc[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].name);
-		strcpy(mapp[0].text[(*eventos)[k].pos[1]][(*eventos)[k].pos[0]], (*eventos)[k].text);
+		numevent[i] = 0;
+		while (feof(events[i]) == 0)
+		{
+			caracter = fgetc(events[i]);
+			if (caracter == '\n')
+					numevent[i]++;
+		}
+		numevent[i] = numevent[i] / 3;
+		rewind(events[i]);
+		for (k = 0; k < numevent[i]; k++)
+		{
+			fscanf(events[i], "%d %d\n", &eventos[i].pos[k][0], &eventos[i].pos[k][1]);
+			fscanf(events[i], "%[^\n]s", eventos[i].name[k]);
+			caracter = fgetc(events[i]);
+			fscanf(events[i], "%[^\n]s", eventos[i].text[k]);
+		}
+		fclose(events[i]);
+		for (k = 0; k < numevent[i]; k++)
+		{
+			mapp[i].map[eventos[i].pos[k][1]][eventos[i].pos[k][0]] = '!';
+			strcpy(mapp[i].desc[eventos[i].pos[k][1]][eventos[i].pos[k][0]], eventos[i].name[k]);
+			strcpy(mapp[i].text[eventos[i].pos[k][1]][eventos[i].pos[k][0]], eventos[i].text[k]);
+		}
 	}
 	return 0;
 }
 
-int display(int posicion[9][2], int numevent, mapeado *mapp, evento *eventos)
+int display(int posicion[9][2], int numevent[MAX], mapeado *mapp, evento *eventos)
 {
 	int k, i, coll, pj[2] = { 3, 3 }, mapactual = 0, cont1, cont2;
 	char mov, auxmap[MAX][MAX];
