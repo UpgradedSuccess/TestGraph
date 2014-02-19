@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <windows.h>
 #define MAX 30
 #define VISIONX 4
 #define VISIONY 2
@@ -10,8 +11,9 @@ typedef struct
 {
 	char map[MAX][MAX];
 	char desc[MAX][MAX][30];
-	char text[MAX][MAX][100];
+	char text[MAX][MAX][MAX][100];
 	int dest[MAX][MAX][3];
+	int numTexto[MAX][MAX];
 } mapeado;
 
 int world(int[9][2], char, mapeado[MAX], int[2], int[MAX], int*);
@@ -22,16 +24,18 @@ int main()
 {
 	int posicion[9][2], numevent[MAX], numlinks=0, nummapas=0, link[10][2][3];
 	mapeado *mapp = NULL;
-
 	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));	
 	lectura(posicion, mapp, numevent, &numlinks, link, &nummapas);
 	mapp = (mapeado*)realloc(mapp, (nummapas+1)* sizeof(mapeado));
+	printf("Instrucciones:\n\nMovimiento: 'wasd'\nInteraccion: 'e'\n\nLeyenda:\nMuros: '#'\nPuertas: 'E'\nLlanos: '-'\n\nPulse una tecla para continuar...");
+	getch();
+	system("cls");
 	display(posicion, numevent, mapp);
 }
 
 int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numevent[MAX], int *mapactual)
 {
-	int aux[3];
+	int aux[3], k, i;
 
 	switch (mov)
 	{
@@ -68,8 +72,17 @@ int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numeve
 		{
 			printf("\n\n\n");
 			printf("%s:\n", mapp[*mapactual].desc[pj[1]][pj[0]]);
-			printf("-%s\n", mapp[*mapactual].text[pj[1]][pj[0]]);
-			getch();
+			printf("-");
+			for (i = 0; i < mapp[*mapactual].numTexto[pj[1]][pj[0]]; i++)
+			{
+				for (k = 0; k < strlen(mapp[*mapactual].text[i][pj[1]][pj[0]]); k++)
+				{
+					printf("%c", mapp[*mapactual].text[i][pj[1]][pj[0]][k]);
+					Sleep(50);
+				}
+				printf("\n ");
+				getch();
+			}
 			return 1;
 		}
 		else if (mapp[*mapactual].map[pj[1]][pj[0]] == 'E')
@@ -87,7 +100,7 @@ int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numeve
 
 int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], int *numlinks, int link[10][2][3], int *nummapas)
 {
-	int k, i, posEvento[2];
+	int k, i, j, posEvento[2], cont = 0;
 	char caracter, nombremapa[10], nombrevento[15], aux1[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } }, aux2[3][7] = { { '0', '0', '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0', '\0', '\0' }, { 'e', 'v', 'e', 'n', 't', 's', '\0' } };
 	FILE* mapa[10];
 	FILE* events[10];
@@ -178,25 +191,40 @@ int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], int *numlinks,
 	for (i = 0; i < (*nummapas); i++)
 		for (k = 0; k < posicion[i][1]; k++)
 			mapp[i].map[k][posicion[i][0]-1] = 0;
+	for (i = 0; i < MAX; i++)
+		for (k = 0; k < MAX;k++)
+			mapp[i].numTexto[i][k] = 0;
 	//##Lectura y almacenamiento de los archivos de eventos##//
 	for (i = 0; i < (*nummapas); i++)
 	{
 		numevent[i] = 0;
+		cont = 0;
 		while (feof(events[i]) == 0)
 		{
-			caracter = fgetc(events[i]);
-			if (caracter == '\n')
-					numevent[i]++;
+			if (fgetc(events[i]) == '\n')
+				numevent[i]++;
 		}
 		numevent[i] = numevent[i] / 3;
 		rewind(events[i]);
 		for (k = 0; k < numevent[i]; k++)
 		{
+			fflush(stdin);
 			fscanf(events[i], "%d %d\n", &posEvento[0], &posEvento[1]);
-			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento[1]][posEvento[0]]);
-			caracter = fgetc(events[i]);
-			fscanf(events[i], "%[^\n]s", mapp[i].text[posEvento[1]][posEvento[0]]);
 			mapp[i].map[posEvento[1]][posEvento[0]] = '!';
+			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento[1]][posEvento[0]]);
+			fseek(events[i], 2, SEEK_CUR);
+			for (j = 0; j < MAX; j++)
+			{
+				fscanf(events[i], "%[^.]s", mapp[i].text[j][posEvento[1]][posEvento[0]]);
+				if (fgetc(events[i]) == '.')
+				{
+					mapp[i].numTexto[posEvento[1]][posEvento[0]]++;
+					if (fgetc(events[i]) == '\n')
+						break;
+				}
+				else
+					break;
+			}
 		}
 		fclose(events[i]);
 	}
@@ -287,7 +315,7 @@ int display(int posicion[9][2], int numevent[MAX], mapeado *mapp)
 				break;
 			}
 		case 'e':
-			world(posicion, mov, mapp, pj,numevent, &mapactual); //Colision
+			world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
 			break;
 		}
 		system("cls");
