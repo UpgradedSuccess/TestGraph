@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <conio.h>
 
-void colisiones(mapeado mapp[MAX], int pj[2], int *mapactual, int tamMapa[MAX][2])
+void colisiones(mapeado mapp[], int pj[2], int *mapactual, int tamMapa[MAX][2])
 {
 	int aux[3], k, i;
 	char mov;

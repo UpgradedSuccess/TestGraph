@@ -2,10 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
+void lectura(int tamMapa[][2], mapeado *mapp, int *nummapas)
 {
 	int k, i, j, posEvento[2], cont = 0, link[2][3], numevent[MAX];
-	char nombremapa[10], nombrevento[15], aux[15];
+	char nombremapa[10], nombrevento[12], aux[15];
 	FILE* mapa[10];
 	FILE* events[10];
 	FILE* links;
@@ -14,25 +14,17 @@ void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
 	do
 	{
 		strcpy(nombremapa, "mapa");
-		itoa((*nummapas) + 1, aux, 10);
-		strcat(nombremapa, aux);
-		strcpy(aux, ".txt");
-		strcat(nombremapa, aux);
-		mapa[(*nummapas)] = fopen(nombremapa, "rt");
-		if (mapa[(*nummapas)] == NULL)
+		strcat(nombremapa, itoa((*nummapas) + 1, aux, 10));
+		strcat(nombremapa, ".txt");
+		mapa[*nummapas] = fopen(nombremapa, "rt");
+		if (mapa[*nummapas] == NULL)
 			break;
+		strcpy(nombrevento, "events");
+		strcat(nombrevento, itoa((*nummapas) + 1, aux, 10));
+		strcat(nombrevento, ".txt");
+		events[*nummapas] = fopen(nombrevento, "rt");
 		(*nummapas)++;
 	} while (1); //Bucle de apertura de archivos de mapas.
-
-	for (k = 0; k < (*nummapas); k++)
-	{
-		strcpy(nombrevento, "events");
-		itoa(k + 1, aux, 10);
-		strcat(nombrevento, aux);
-		strcpy(aux, ".txt");
-		strcat(nombrevento, aux);
-		events[k] = fopen(nombrevento, "rt");
-	} //Bucle de apertura de archivos de eventos.
 
 	for (k = 0; k < (*nummapas); k++)
 	{
@@ -59,11 +51,11 @@ void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
 	}
 	//##Se añade \0 al final de cada línea para que no se solapen los saltos de línea (Tú déjalo como está)##//
 	for (i = 0; i < (*nummapas); i++)
-	for (k = 0; k < tamMapa[i][1]; k++)
-		mapp[i].map[k][tamMapa[i][0] - 1] = 0;
+		for (k = 0; k < tamMapa[i][1]; k++)
+			mapp[i].map[k][tamMapa[i][0] - 1] = 0;
 	for (i = 0; i < MAX; i++)
-	for (k = 0; k < MAX; k++)
-		mapp[i].numTexto[i][k] = 0;
+		for (k = 0; k < MAX; k++)
+			mapp[i].numTexto[i][k] = 0;
 	//##Lectura y almacenamiento de los archivos de eventos##//
 	for (i = 0; i < (*nummapas); i++)
 	{
@@ -78,7 +70,6 @@ void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
 		rewind(events[i]);
 		for (k = 0; k < numevent[i]; k++)
 		{
-			fflush(stdin);
 			fscanf(events[i], "%d %d\n", &posEvento[0], &posEvento[1]);
 			mapp[i].map[posEvento[1]][posEvento[0]] = '!';
 			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento[1]][posEvento[0]]);
@@ -102,14 +93,18 @@ void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
 	{
 		fscanf(links, "%d %d %d ", &link[0][0], &link[0][1], &link[0][2]);
 		fscanf(links, "%d %d %d\n", &link[1][0], &link[1][1], &link[1][2]);
+
 		mapp[link[0][0]].dest[link[0][1]][link[0][2]][0] = link[1][0];
 		mapp[link[0][0]].dest[link[0][1]][link[0][2]][1] = link[1][1];
 		mapp[link[0][0]].dest[link[0][1]][link[0][2]][2] = link[1][2];
+
 		mapp[link[1][0]].dest[link[1][1]][link[1][2]][0] = link[0][0];
 		mapp[link[1][0]].dest[link[1][1]][link[1][2]][1] = link[0][1];
 		mapp[link[1][0]].dest[link[1][1]][link[1][2]][2] = link[0][2];
+
 		mapp[link[0][0]].map[link[0][1]][link[0][2]] = 'E';
 		mapp[link[1][0]].map[link[1][1]][link[1][2]] = 'E';
+
 		strcpy(mapp[link[0][0]].desc[link[0][1]][link[0][2]], "Puerta");
 		strcpy(mapp[link[1][0]].desc[link[1][1]][link[1][2]], "Puerta");
 	}

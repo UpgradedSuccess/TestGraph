@@ -1,6 +1,6 @@
 ﻿#include "cabecera.h"
 
-void display(int tamMapa[MAX][2], mapeado *mapp)
+void display(int tamMapa[][2], mapeado *mapp)
 {
 	int k, i, pj[2] = { 3, 3 }, mapactual = 0, cont1, cont2;
 	char auxmap[MAX][MAX];
@@ -39,7 +39,6 @@ void display(int tamMapa[MAX][2], mapeado *mapp)
 		for (k = 0; k < VISIONX + 1; k++) //Bucle para mostrar el mapa
 			puts(auxmap[k]);
 		printf("\nMapa: %d\n%s", mapactual + 1, mapp[mapactual].desc[pj[1]][pj[0]]);
-		//##Movimiento##//
 		colisiones(mapp, pj, &mapactual, tamMapa); //Colision
 		system("cls");
 	} while (1);
