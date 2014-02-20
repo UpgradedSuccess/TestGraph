@@ -16,57 +16,86 @@ typedef struct
 	int numTexto[MAX][MAX];
 } mapeado;
 
-int world(int[9][2], char, mapeado[MAX], int[2], int[MAX], int*);
-int lectura(int[9][2], mapeado*, int[MAX], int*, int[10][2][3], int*);
-int display(int[9][2], int[MAX], mapeado*);
+void world(mapeado[MAX], int[2], int*, int[MAX][2]);
+void lectura(int[MAX][2], mapeado*, int*);
+void display(int[MAX][2], mapeado*);
 
 int main()
 {
-	int posicion[9][2], numevent[MAX], numlinks=0, nummapas=0, link[10][2][3];
+	int tamMapa[MAX][2], nummapas=0;
 	mapeado *mapp = NULL;
 	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));	
-	lectura(posicion, mapp, numevent, &numlinks, link, &nummapas);
+	lectura(tamMapa, mapp, &nummapas);
 	mapp = (mapeado*)realloc(mapp, (nummapas+1)* sizeof(mapeado));
 	printf("Instrucciones:\n\nMovimiento: 'wasd'\nInteraccion: 'e'\n\nLeyenda:\nMuros: '#'\nPuertas: 'E'\nLlanos: '-'\n\nPulse una tecla para continuar...");
 	getch();
 	system("cls");
-	display(posicion, numevent, mapp);
+	display(tamMapa, mapp);
 }
 
-int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numevent[MAX], int *mapactual)
+void world(mapeado mapp[MAX], int pj[2], int *mapactual, int tamMapa[MAX][2])
 {
 	int aux[3], k, i;
+	char mov;
 
-	switch (mov)
+	switch (mov = getch())
 	{
 	case 'w':
 		if (mapp[*mapactual].map[pj[1] - 1][pj[0]] == '#')
-			return 0; //El personaje no se mueve
-		else if (mapp[*mapactual].map[pj[1] - 1][pj[0]] == '-' || mapp[*mapactual].map[pj[1] - 1][pj[0]] == 'E')
-			return 1; //El personaje se mueve
+		{
+			printf("\a");
+			return;
+		}
+		else if (mapp[*mapactual].map[pj[1] - 1][pj[0]] == '-' || mapp[*mapactual].map[pj[1] - 1][pj[0]] == 'E' || mapp[*mapactual].map[pj[1] - 1][pj[0]] == '!')
+		{
+			if (pj[1] != 0)
+				pj[1]--;
+			return; //El personaje se mueve
+		}
 		else
-			return 1; //El personaje se mueve
+			return; //El personaje se mueve
 	case 'a':
 		if (mapp[*mapactual].map[pj[1]][pj[0] - 1] == '#')
-			return 0;
-		else if (mapp[*mapactual].map[pj[1]][pj[0] - 1] == '-' || mapp[*mapactual].map[pj[1]][pj[0] - 1] == 'E')
-			return 1;
+		{
+			printf("\a");
+			return;
+		}
+		else if (mapp[*mapactual].map[pj[1]][pj[0] - 1] == '-' || mapp[*mapactual].map[pj[1]][pj[0] - 1] == 'E' || mapp[*mapactual].map[pj[1]][pj[0] - 1] == '!')
+		{
+			if (pj[0] != 0)
+				pj[0]--;
+			return;
+		}
 		else
-			return 1;
+			return;
 	case 's':
 		if (mapp[*mapactual].map[pj[1] + 1][pj[0]] == '#')
-			return 0;
-		else if (mapp[*mapactual].map[pj[1] + 1][pj[0]] == '-' || mapp[*mapactual].map[pj[1] + 1][pj[0]] == 'E')
-			return 1;
+		{
+			printf("\a");
+			return;
+		}
+		else if (mapp[*mapactual].map[pj[1] + 1][pj[0]] == '-' || mapp[*mapactual].map[pj[1] + 1][pj[0]] == 'E' || mapp[*mapactual].map[pj[1] + 1][pj[0]] == '!')
+		{
+			if (pj[1] != tamMapa[*mapactual][1])
+				pj[1]++;
+			return;
+		}
 		else
-			return 1;
+			return;
 	case 'd':
 		if (mapp[*mapactual].map[pj[1]][pj[0] + 1] == '#')
-			return 0;
-		else if (mapp[*mapactual].map[pj[1]][pj[0] + 1] == '-' || mapp[*mapactual].map[pj[1]][pj[0] + 1] == 'E')
-			return 1;
+		{
+			printf("\a");
+			return;
+		}
+		else if (mapp[*mapactual].map[pj[1]][pj[0] + 1] == '-' || mapp[*mapactual].map[pj[1]][pj[0] + 1] == 'E' || mapp[*mapactual].map[pj[1]][pj[0] + 1] == '!')
+		{
+			if (pj[0] != tamMapa[*mapactual][0] - 2)
+				pj[0]++;
+			return;
+		}
 		else
-			return 1;
+			return;
 	case 'e':
 		if (mapp[*mapactual].map[pj[1]][pj[0]] == '!')
 		{
@@ -83,7 +112,7 @@ int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numeve
 				printf("\n ");
 				getch();
 			}
-			return 1;
+			return;
 		}
 		else if (mapp[*mapactual].map[pj[1]][pj[0]] == 'E')
 		{
@@ -94,40 +123,26 @@ int world(int posicion[9][2], char mov, mapeado mapp[MAX], int pj[2], int numeve
 			pj[1] = aux[1];
 			pj[0] = aux[2];
 		}
-		return 0;
+		return;
 	}
 }
 
-int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], int *numlinks, int link[10][2][3], int *nummapas)
+void lectura(int tamMapa[MAX][2], mapeado *mapp, int *nummapas)
 {
-	int k, i, j, posEvento[2], cont = 0;
-	char caracter, nombremapa[10], nombrevento[15], aux1[3][5] = { { '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0' }, { 'm', 'a', 'p', 'a', '\0' } }, aux2[3][7] = { { '0', '0', '0', '0', '0', '0', '0' }, { '.', 't', 'x', 't', '\0', '\0', '\0' }, { 'e', 'v', 'e', 'n', 't', 's', '\0' } };
+	int k, i, j, posEvento[2], cont = 0, link[2][3], numevent[MAX];
+	char nombremapa[10], nombrevento[15], aux[15];
 	FILE* mapa[10];
 	FILE* events[10];
 	FILE* links;
 
-	links = fopen("links.txt", "rt");
-
-	//####Lectura del archivo de links####//
-	while (feof(links) == 0)
-	{
-		caracter = fgetc(links);
-		if (caracter == '\n')
-			(*numlinks)++;
-	}
-	rewind(links);
-	for (k = 0; k < (*numlinks); k++)
-	{
-		fscanf(links, "%d %d %d ", &link[k][0][0], &link[k][0][1], &link[k][0][2]);
-		fscanf(links, "%d %d %d\n", &link[k][1][0], &link[k][1][1], &link[k][1][2]);
-	}
-	//####################################//
+	links = fopen("links.txt", "rt");	
 	do
 	{
-		strcpy(nombremapa, aux1[2]);
-		itoa((*nummapas) + 1, aux1[0], 10);
-		strcat(nombremapa, aux1[0]);
-		strcat(nombremapa, aux1[1]);
+		strcpy(nombremapa, "mapa");
+		itoa((*nummapas) + 1, aux, 10);
+		strcat(nombremapa, aux);
+		strcpy(aux, ".txt");
+		strcat(nombremapa, aux);
 		mapa[(*nummapas)] = fopen(nombremapa, "rt");
 		if (mapa[(*nummapas)] == NULL)
 			break;
@@ -136,61 +151,41 @@ int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], int *numlinks,
 
 	for (k = 0; k < (*nummapas);k++)
 	{
-		strcpy(nombrevento, aux2[2]);
-		itoa(k+1, aux2[0], 10);
-		strcat(nombrevento, aux2[0]);
-		strcat(nombrevento, aux2[1]);
+		strcpy(nombrevento, "events");
+		itoa(k + 1, aux, 10);
+		strcat(nombrevento, aux);
+		strcpy(aux, ".txt");
+		strcat(nombrevento, aux);
 		events[k] = fopen(nombrevento, "rt");
 	} //Bucle de apertura de archivos de eventos.
 	
 	for (k = 0; k < (*nummapas); k++)
 	{
-		posicion[k][0] = 0;
-		posicion[k][1] = 0;
+		tamMapa[k][0] = 0;
+		tamMapa[k][1] = 0;
 		while (feof(mapa[k]) == 0)
 		{
-			mapp[k].map[posicion[k][1]][posicion[k][0]] = fgetc(mapa[k]);	//Almacenamiento del mapa.
+			mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] = fgetc(mapa[k]);	//Almacenamiento del mapa.
 
 			//###Almacenamiento de descripciones del mapa##//
-			if (mapp[k].map[posicion[k][1]][posicion[k][0]] == '-')
-				strcpy(mapp[k].desc[posicion[k][1]][posicion[k][0]], "Llanos");
-			else if (mapp[k].map[posicion[k][1]][posicion[k][0]] == '#')
-				strcpy(mapp[k].desc[posicion[k][1]][posicion[k][0]], "Muro");
-			else if (mapp[k].map[posicion[k][1]][posicion[k][0]] == 'E')
+			if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '-')
+				strcpy(mapp[k].desc[tamMapa[k][1]][tamMapa[k][0]], "Llanos");
+			else if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '#')
+				strcpy(mapp[k].desc[tamMapa[k][1]][tamMapa[k][0]], "Muro");
+			if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '\n')
 			{
-				strcpy(mapp[k].desc[posicion[k][1]][posicion[k][0]], "Puerta");
-
-				for (i = 0; i < (*numlinks); i++) //Almacenamiento de links de puertas.
-				{
-					//##Emparejamiento de cada link con su puerta##//
-					if (link[i][0][0] == k && link[i][0][1] == posicion[k][1] && link[i][0][2] == posicion[k][0]) //Búsqueda de emparejamientos en los links de origen
-					{
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][0] = link[i][1][0];
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][1] = link[i][1][1];
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][2] = link[i][1][2];
-					}
-					else if (link[i][1][0] == k && link[i][1][1] == posicion[k][1] && link[i][1][2] == posicion[k][0])	//Búsqueda de emparejamientos en los links de destino
-					{
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][0] = link[i][0][0];
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][1] = link[i][0][1];
-						mapp[k].dest[posicion[k][1]][posicion[k][0]][2] = link[i][0][2];
-					}
-				}
-			}
-			if (mapp[k].map[posicion[k][1]][posicion[k][0]] == '\n')
-			{
-				posicion[k][1]++;	//El vector "posicion" se utiliza para ir apuntando a todos los tiles del mapa.
-				posicion[k][0] = 0;
+				tamMapa[k][1]++;	//El vector "tamMapa" se utiliza para ir apuntando a todos los tiles del mapa.
+				tamMapa[k][0] = 0;
 				continue;
 			}
-			posicion[k][0]++;
+			tamMapa[k][0]++;
 		}
 		fclose(mapa[k]);
 	}
 	//##Se añade \0 al final de cada línea para que no se solapen los saltos de línea (Tú déjalo como está)##//
 	for (i = 0; i < (*nummapas); i++)
-		for (k = 0; k < posicion[i][1]; k++)
-			mapp[i].map[k][posicion[i][0]-1] = 0;
+		for (k = 0; k < tamMapa[i][1]; k++)
+			mapp[i].map[k][tamMapa[i][0]-1] = 0;
 	for (i = 0; i < MAX; i++)
 		for (k = 0; k < MAX;k++)
 			mapp[i].numTexto[i][k] = 0;
@@ -228,13 +223,29 @@ int lectura(int posicion[9][2], mapeado *mapp, int numevent[MAX], int *numlinks,
 		}
 		fclose(events[i]);
 	}
-	return 0;
+	while (feof(links) == 0) //Lectura del archivo de links
+	{
+		fscanf(links, "%d %d %d ", &link[0][0], &link[0][1], &link[0][2]);
+		fscanf(links, "%d %d %d\n", &link[1][0], &link[1][1], &link[1][2]);
+		mapp[link[0][0]].dest[link[0][1]][link[0][2]][0] = link[1][0];
+		mapp[link[0][0]].dest[link[0][1]][link[0][2]][1] = link[1][1];
+		mapp[link[0][0]].dest[link[0][1]][link[0][2]][2] = link[1][2];
+		mapp[link[1][0]].dest[link[1][1]][link[1][2]][0] = link[0][0];
+		mapp[link[1][0]].dest[link[1][1]][link[1][2]][1] = link[0][1];
+		mapp[link[1][0]].dest[link[1][1]][link[1][2]][2] = link[0][2];
+		mapp[link[0][0]].map[link[0][1]][link[0][2]] = 'E';
+		mapp[link[1][0]].map[link[1][1]][link[1][2]] = 'E';
+		strcpy(mapp[link[0][0]].desc[link[0][1]][link[0][2]], "Puerta");
+		strcpy(mapp[link[1][0]].desc[link[1][1]][link[1][2]], "Puerta");
+	}
+	fclose(links);
+	return;
 }
 
-int display(int posicion[9][2], int numevent[MAX], mapeado *mapp)
+void display(int tamMapa[MAX][2], mapeado *mapp)
 {
-	int k, i, coll, pj[2] = { 3, 3 }, mapactual = 0, cont1, cont2;
-	char mov, auxmap[MAX][MAX];
+	int k, i, pj[2] = { 3, 3 }, mapactual = 0, cont1, cont2;
+	char auxmap[MAX][MAX];
 
 	do
 	{
@@ -257,7 +268,7 @@ int display(int posicion[9][2], int numevent[MAX], mapeado *mapp)
 					auxmap[cont1][cont2] = '\0';
 				else
 				{
-					if (k >= posicion[mapactual][0] || k<0 || i>posicion[mapactual][1] || i < 0) //Exterior del mapa
+					if (k >= tamMapa[mapactual][0] || k<0 || i>tamMapa[mapactual][1] || i < 0) //Exterior del mapa
 						continue;
 					else //Resto del mapa
 						auxmap[cont1][cont2] = mapp[mapactual].map[i][k];
@@ -270,54 +281,8 @@ int display(int posicion[9][2], int numevent[MAX], mapeado *mapp)
 		for (k = 0; k < VISIONX+1; k++) //Bucle para mostrar el mapa
 			puts(auxmap[k]);
 		printf("\nMapa: %d\n%s", mapactual+1, mapp[mapactual].desc[pj[1]][pj[0]]);
-
 		//##Movimiento##//
-		switch (mov = getch())
-		{
-		case 'w':
-			coll = world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[1] != 0)
-					pj[1]--;
-				break;
-			}
-		case 'a':
-			coll = world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[0] != 0)
-					pj[0]--;
-				break;
-			}
-		case 's':
-			coll = world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[1] != posicion[mapactual][1])
-					pj[1]++;
-				break;
-			}
-		case 'd':
-			coll = world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
-			if (coll == 0)
-				break;
-			else if (coll == 1)
-			{
-				if (pj[0] != posicion[mapactual][0] - 2)
-					pj[0]++;
-				break;
-			}
-		case 'e':
-			world(posicion, mov, mapp, pj, numevent, &mapactual); //Colision
-			break;
-		}
+		world(mapp, pj, &mapactual, tamMapa); //Colision
 		system("cls");
 	} while (1);
 }
