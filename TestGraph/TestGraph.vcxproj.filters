@@ -18,5 +18,19 @@
     <ClCompile Include="main.c">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+    <ClCompile Include="colisiones.c">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="display.c">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="lectura.c">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cabecera.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
