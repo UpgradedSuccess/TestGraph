@@ -2,16 +2,15 @@
 #include <conio.h>
 #include <stdlib.h>
 
+mapeado *mapp;
+pos *tamMapa;
+
 int main()
 {
-	int tamMapa[MAX][2], nummapas=0;
-	mapeado *mapp = NULL;
 
-	mapp = (mapeado*)calloc(MAX, sizeof(mapeado));
-	lectura(tamMapa, mapp, &nummapas);
-	mapp = (mapeado*)realloc(mapp, (nummapas+1)* sizeof(mapeado));
+	lectura(tamMapa);
 	printf("Instrucciones:\n\nMovimiento: 'wasd'\nInteraccion: 'e'\n\nLeyenda:\nMuros: '#'\nPuertas: 'E'\nLlanos: '-'\n\nPulse una tecla para continuar...");
 	getch();
 	system("cls");
-	display(tamMapa, mapp);
+	display(tamMapa);
 }
