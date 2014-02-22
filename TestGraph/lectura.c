@@ -2,111 +2,118 @@
 #include <string.h>
 #include <stdlib.h>
 
-void lectura(int tamMapa[][2], mapeado *mapp, int *nummapas)
+mapeado *mapp;
+pos *tamMapa;
+
+void lectura()
 {
-	int k, i, j, posEvento[2], cont = 0, link[2][3], numevent[MAX];
-	char nombremapa[10], nombrevento[12], aux[15];
-	FILE* mapa[10];
-	FILE* events[10];
-	FILE* links;
+	int k, i, j, cont = 0, *numevent=0, nummapas = 0;
+	char nombre[12], aux[15];
+	pos posEvento;
+	link origen;
+	link destino;
+	FILE **mapa, **events, *links;
 
 	links = fopen("links.txt", "rt");
+	mapa = (FILE**)calloc(10, sizeof(FILE*));
+	events = (FILE**)calloc(1, sizeof(FILE*));
 	do
 	{
-		strcpy(nombremapa, "mapa");
-		strcat(nombremapa, itoa((*nummapas) + 1, aux, 10));
-		strcat(nombremapa, ".txt");
-		mapa[*nummapas] = fopen(nombremapa, "rt");
-		if (mapa[*nummapas] == NULL)
+		strcpy(nombre, "mapa");
+		strcat(nombre, itoa(nummapas + 1, aux, 10));
+		strcat(nombre, ".txt");
+		mapa[nummapas] = fopen(nombre, "rt");
+		if (mapa[nummapas] == NULL)
 			break;
-		strcpy(nombrevento, "events");
-		strcat(nombrevento, itoa((*nummapas) + 1, aux, 10));
-		strcat(nombrevento, ".txt");
-		events[*nummapas] = fopen(nombrevento, "rt");
-		(*nummapas)++;
+		strcpy(nombre, "events");
+		strcat(nombre, itoa(nummapas + 1, aux, 10));
+		strcat(nombre, ".txt");
+		events[nummapas] = fopen(nombre, "rt");
+		nummapas++;
+		mapp = (mapeado*)realloc(mapp, nummapas * sizeof(mapeado));
+		tamMapa = (pos*)realloc(tamMapa, nummapas * sizeof(pos));
+		numevent = (int*)realloc(numevent, nummapas * sizeof(int));
+		mapa = (FILE**)realloc(mapa, (nummapas+1) * sizeof(FILE*));
+		events = (FILE**)realloc(events, (nummapas+1) * sizeof(FILE*));
 	} while (1); //Bucle de apertura de archivos de mapas.
 
-	for (k = 0; k < (*nummapas); k++)
+	for (k = 0; k < nummapas; k++)
 	{
-		tamMapa[k][0] = 0;
-		tamMapa[k][1] = 0;
+		tamMapa[k].X = 0;
+		tamMapa[k].Y = 0;
 		while (feof(mapa[k]) == 0)
 		{
-			mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] = fgetc(mapa[k]);	//Almacenamiento del mapa.
+			mapp[k].map[tamMapa[k].Y][tamMapa[k].X] = fgetc(mapa[k]);	//Almacenamiento del mapa.
 
 			//###Almacenamiento de descripciones del mapa##//
-			if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '-')
-				strcpy(mapp[k].desc[tamMapa[k][1]][tamMapa[k][0]], "Llanos");
-			else if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '#')
-				strcpy(mapp[k].desc[tamMapa[k][1]][tamMapa[k][0]], "Muro");
-			if (mapp[k].map[tamMapa[k][1]][tamMapa[k][0]] == '\n')
+			if (mapp[k].map[tamMapa[k].Y][tamMapa[k].X] == '-')
+				strcpy(mapp[k].desc[tamMapa[k].Y][tamMapa[k].X], "Llanos");
+			else if (mapp[k].map[tamMapa[k].Y][tamMapa[k].X] == '#')
+				strcpy(mapp[k].desc[tamMapa[k].Y][tamMapa[k].X], "Muro");
+			if (mapp[k].map[tamMapa[k].Y][tamMapa[k].X] == '\n')
 			{
-				tamMapa[k][1]++;	//El vector "tamMapa" se utiliza para ir apuntando a todos los tiles del mapa.
-				tamMapa[k][0] = 0;
+				tamMapa[k].Y++;	//El vector "tamMapa" se utiliza para ir apuntando a todos los tiles del mapa.
+				tamMapa[k].X = 0;
 				continue;
 			}
-			tamMapa[k][0]++;
+			tamMapa[k].X++;
 		}
 		fclose(mapa[k]);
 	}
 	//##Se añade \0 al final de cada línea para que no se solapen los saltos de línea (Tú déjalo como está)##//
-	for (i = 0; i < (*nummapas); i++)
-		for (k = 0; k < tamMapa[i][1]; k++)
-			mapp[i].map[k][tamMapa[i][0] - 1] = 0;
-	for (i = 0; i < MAX; i++)
-		for (k = 0; k < MAX; k++)
-			mapp[i].numTexto[i][k] = 0;
-	//##Lectura y almacenamiento de los archivos de eventos##//
-	for (i = 0; i < (*nummapas); i++)
+	for (i = 0; i < nummapas; i++)
 	{
-		numevent[i] = 0;
-		cont = 0;
+		for (k = 0; k < tamMapa[i].Y; k++)
+		{
+			mapp[i].map[k][tamMapa[i].X - 1] = 0;
+			mapp[i].numTexto[i][k] = 0;
+		}
+	}
+	//##Lectura y almacenamiento de los archivos de eventos##//
+	for (i = 0; i < nummapas; i++)
+	{
+		fgetc(events[i]);
 		while (feof(events[i]) == 0)
 		{
-			if (fgetc(events[i]) == '\n')
-				numevent[i]++;
-		}
-		numevent[i] = numevent[i] / 3;
-		rewind(events[i]);
-		for (k = 0; k < numevent[i]; k++)
-		{
-			fscanf(events[i], "%d %d\n", &posEvento[0], &posEvento[1]);
-			mapp[i].map[posEvento[1]][posEvento[0]] = '!';
-			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento[1]][posEvento[0]]);
+			numevent[i] = 0;
+			cont = 0;
+			j = 0;
+			fscanf(events[i], "%d %d\n", &posEvento.Y, &posEvento.X);
+			mapp[i].map[posEvento.Y][posEvento.X] = '!';
+			mapp[i].numTexto[posEvento.Y][posEvento.X] = 0;
+			fgetc(events[i]);
+			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento.Y][posEvento.X]);
 			fseek(events[i], 2, SEEK_CUR);
-			for (j = 0; j < MAX; j++)
+			while (fgetc(events[i]) != '-')
 			{
-				fscanf(events[i], "%[^.]s", mapp[i].text[j][posEvento[1]][posEvento[0]]);
-				if (fgetc(events[i]) == '.')
-				{
-					mapp[i].numTexto[posEvento[1]][posEvento[0]]++;
-					if (fgetc(events[i]) == '\n')
-						break;
-				}
-				else
+				fscanf(events[i], "%[^\n]s", mapp[i].text[posEvento.Y][posEvento.X][j]);
+				mapp[i].numTexto[posEvento.Y][posEvento.X]++;
+				if (fgetc(events[i]) == EOF)
 					break;
+				j++;
 			}
+			numevent[i]++;
 		}
 		fclose(events[i]);
 	}
 	while (feof(links) == 0) //Lectura del archivo de links
 	{
-		fscanf(links, "%d %d %d ", &link[0][0], &link[0][1], &link[0][2]);
-		fscanf(links, "%d %d %d\n", &link[1][0], &link[1][1], &link[1][2]);
+		fscanf(links, "%d %d %d ", &origen.map, &origen.Y, &origen.X);
+		fscanf(links, "%d %d %d\n", &destino.map, &destino.Y, &destino.X);
 
-		mapp[link[0][0]].dest[link[0][1]][link[0][2]][0] = link[1][0];
-		mapp[link[0][0]].dest[link[0][1]][link[0][2]][1] = link[1][1];
-		mapp[link[0][0]].dest[link[0][1]][link[0][2]][2] = link[1][2];
+		mapp[origen.map].dest[origen.Y][origen.X][0] = destino.map;
+		mapp[origen.map].dest[origen.Y][origen.X][1] = destino.Y;
+		mapp[origen.map].dest[origen.Y][origen.X][2] = destino.X;
 
-		mapp[link[1][0]].dest[link[1][1]][link[1][2]][0] = link[0][0];
-		mapp[link[1][0]].dest[link[1][1]][link[1][2]][1] = link[0][1];
-		mapp[link[1][0]].dest[link[1][1]][link[1][2]][2] = link[0][2];
+		mapp[destino.map].dest[destino.Y][destino.X][0] = origen.map;
+		mapp[destino.map].dest[destino.Y][destino.X][1] = origen.Y;
+		mapp[destino.map].dest[destino.Y][destino.X][2] = origen.X;
 
-		mapp[link[0][0]].map[link[0][1]][link[0][2]] = 'E';
-		mapp[link[1][0]].map[link[1][1]][link[1][2]] = 'E';
+		mapp[origen.map].map[origen.Y][origen.X] = 'E';
+		mapp[destino.map].map[destino.Y][destino.X] = 'E';
 
-		strcpy(mapp[link[0][0]].desc[link[0][1]][link[0][2]], "Puerta");
-		strcpy(mapp[link[1][0]].desc[link[1][1]][link[1][2]], "Puerta");
+		strcpy(mapp[origen.map].desc[origen.Y][origen.X], "Puerta");
+		strcpy(mapp[destino.map].desc[destino.Y][destino.X], "Puerta");
 	}
 	fclose(links);
 	return;
