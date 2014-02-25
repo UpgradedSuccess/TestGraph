@@ -10,12 +10,11 @@ void lectura()
 	int k, i, j, cont = 0, *numevent=0, nummapas = 0;
 	char nombre[12], aux[15];
 	pos posEvento;
-	link origen;
-	link destino;
+	link origen, destino;
 	FILE **mapa, **events, *links;
 
 	links = fopen("links.txt", "rt");
-	mapa = (FILE**)calloc(10, sizeof(FILE*));
+	mapa = (FILE**)calloc(1, sizeof(FILE*));
 	events = (FILE**)calloc(1, sizeof(FILE*));
 	do
 	{
@@ -29,20 +28,27 @@ void lectura()
 		strcat(nombre, itoa(nummapas + 1, aux, 10));
 		strcat(nombre, ".txt");
 		events[nummapas] = fopen(nombre, "rt");
+		if (events[nummapas] == NULL)
+		{
+			printf("Error al abrir el archivo 'events%d.txt'\n", nummapas + 1);
+			exit(0);
+		}
 		nummapas++;
 		mapp = (mapeado*)realloc(mapp, nummapas * sizeof(mapeado));
 		tamMapa = (pos*)realloc(tamMapa, nummapas * sizeof(pos));
 		numevent = (int*)realloc(numevent, nummapas * sizeof(int));
 		mapa = (FILE**)realloc(mapa, (nummapas+1) * sizeof(FILE*));
 		events = (FILE**)realloc(events, (nummapas+1) * sizeof(FILE*));
+		if (tamMapa == NULL || numevent == NULL || mapa == NULL || events == NULL)
+			error(1);
 	} while (1); //Bucle de apertura de archivos de mapas.
-
 	for (k = 0; k < nummapas; k++)
 	{
 		tamMapa[k].X = 0;
 		tamMapa[k].Y = 0;
 		while (feof(mapa[k]) == 0)
 		{
+
 			mapp[k].map[tamMapa[k].Y][tamMapa[k].X] = fgetc(mapa[k]);	//Almacenamiento del mapa.
 
 			//###Almacenamiento de descripciones del mapa##//
@@ -117,4 +123,12 @@ void lectura()
 	}
 	fclose(links);
 	return;
+}
+
+void error(int err)
+{
+	switch (err)
+		case 1:
+			printf("Error de memoria.\n");
+			exit(0);
 }

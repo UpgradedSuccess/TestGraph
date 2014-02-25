@@ -30,6 +30,7 @@ typedef struct
 extern mapeado *mapp;
 extern pos *tamMapa;
 
-void colisiones(pos*, int*, pos[]);
-void lectura(pos[]);
-void display(pos[]);
+void colisiones(pos*, int*, int*);
+void lectura();
+void display();
+void error(int);

@@ -5,7 +5,7 @@
 mapeado *mapp;
 pos *tamMapa;
 
-void colisiones(pos *pj, int *mapactual)
+void colisiones(pos *pj, int *mapactual, int *KEY)
 {
 	int k, i;
 	char mov;
@@ -16,13 +16,17 @@ void colisiones(pos *pj, int *mapactual)
 	case 'w':
 		if (mapp[*mapactual].map[pj->Y - 1][pj->X] == '#')
 		{
+			*KEY = 0;
 			printf("\a");
 			return;
 		}
 		else if (mapp[*mapactual].map[pj->Y - 1][pj->X] == '-' || mapp[*mapactual].map[pj->Y - 1][pj->X] == 'E' || mapp[*mapactual].map[pj->Y - 1][pj->X] == '!')
 		{
 			if (pj->Y != 0)
+			{
 				pj->Y--;
+				*KEY = 1;
+			}
 			return;
 		}
 		else
@@ -30,13 +34,17 @@ void colisiones(pos *pj, int *mapactual)
 	case 'a':
 		if (mapp[*mapactual].map[pj->Y][pj->X - 1] == '#')
 		{
+			*KEY = 0;
 			printf("\a");
 			return;
 		}
 		else if (mapp[*mapactual].map[pj->Y][pj->X - 1] == '-' || mapp[*mapactual].map[pj->Y][pj->X - 1] == 'E' || mapp[*mapactual].map[pj->Y][pj->X - 1] == '!')
 		{
 			if (pj->X != 0)
+			{
 				pj->X--;
+				*KEY = 1;
+			}
 			return;
 		}
 		else
@@ -44,13 +52,17 @@ void colisiones(pos *pj, int *mapactual)
 	case 's':
 		if (mapp[*mapactual].map[pj->Y + 1][pj->X] == '#')
 		{
+			*KEY = 0;
 			printf("\a");
 			return;
 		}
 		else if (mapp[*mapactual].map[pj->Y + 1][pj->X] == '-' || mapp[*mapactual].map[pj->Y + 1][pj->X] == 'E' || mapp[*mapactual].map[pj->Y + 1][pj->X] == '!')
 		{
 			if (pj->Y != tamMapa[*mapactual].Y)
+			{
 				pj->Y++;
+				*KEY = 1;
+			}
 			return;
 		}
 		else
@@ -58,20 +70,30 @@ void colisiones(pos *pj, int *mapactual)
 	case 'd':
 		if (mapp[*mapactual].map[pj->Y][pj->X + 1] == '#')
 		{
+			*KEY = 0;
 			printf("\a");
 			return;
 		}
 		else if (mapp[*mapactual].map[pj->Y][pj->X + 1] == '-' || mapp[*mapactual].map[pj->Y][pj->X + 1] == 'E' || mapp[*mapactual].map[pj->Y][pj->X + 1] == '!')
 		{
 			if (pj->X != tamMapa[*mapactual].X - 2)
+			{
 				pj->X++;
+				*KEY = 1;
+			}
 			return;
 		}
 		else
 			return;
 	case 'e':
-		if (mapp[*mapactual].map[pj->Y][pj->X] == '!')
+		if (mapp[*mapactual].map[pj->Y][pj->X] == '-')
 		{
+			*KEY = 0;
+			return;
+		}
+		else if (mapp[*mapactual].map[pj->Y][pj->X] == '!')
+		{
+			*KEY = 1;
 			printf("\n\n\n");
 			printf("%s:\n", mapp[*mapactual].desc[pj->Y][pj->X]);
 			printf("-");
@@ -89,6 +111,7 @@ void colisiones(pos *pj, int *mapactual)
 		}
 		else if (mapp[*mapactual].map[pj->Y][pj->X] == 'E')
 		{
+			*KEY = 1;
 			aux.map = mapp[*mapactual].dest[pj->Y][pj->X][0];
 			aux.Y = mapp[*mapactual].dest[pj->Y][pj->X][1];
 			aux.X = mapp[*mapactual].dest[pj->Y][pj->X][2];
