@@ -1,9 +1,5 @@
 ﻿#include <stdio.h>
 #define MAX 30
-#define VISIONX 4 // A ser posible, VISIONY será VISIONX-2. Más que nada para que el mapa sea cuadrado
-#define VISIONY 2
-#define INICIOPJX 3
-#define INICIOPJY 3
 
 typedef struct
 {
@@ -27,10 +23,36 @@ typedef struct
 	int Y;
 }pos;
 
+typedef struct
+{
+	char UP;
+	char DOWN;
+	char LEFT;
+	char RIGHT;
+	char ACTION;
+	char SPECIAL;
+}controls;
+
+typedef struct
+{
+	char PLAINS;
+	char WALL;
+	char EVENT;
+	char DOOR;
+	char PJ;
+}graphstruct;
+
 extern mapeado *mapp;
 extern pos *tamMapa;
+extern controls controles;
+extern pos VISION;
+extern pos INITPJ;
+extern graphstruct graph;
+extern int nummapas;
 
 void colisiones(pos*, int*, int*);
 void lectura();
 void display();
 void error(int);
+void inicializacion();
+void instrucciones();

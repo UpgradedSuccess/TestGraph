@@ -4,10 +4,11 @@
 
 mapeado *mapp;
 pos *tamMapa;
+int nummapas = 0;
 
 void lectura()
 {
-	int k, i, j, cont = 0, *numevent=0, nummapas = 0;
+	int k, i, j, cont = 0, *numevent=0;
 	char nombre[12], aux[15];
 	pos posEvento;
 	link origen, destino;
@@ -88,13 +89,14 @@ void lectura()
 			mapp[i].map[posEvento.Y][posEvento.X] = '!';
 			mapp[i].numTexto[posEvento.Y][posEvento.X] = 0;
 			fgetc(events[i]);
-			fscanf(events[i], "%[^\n]s", mapp[i].desc[posEvento.Y][posEvento.X]);
-			fseek(events[i], 2, SEEK_CUR);
+			fgets(mapp[i].desc[posEvento.Y][posEvento.X], MAX, events[i]);
+			strtok(mapp[i].desc[posEvento.Y][posEvento.X], "\n");
 			while (fgetc(events[i]) != '-')
 			{
-				fscanf(events[i], "%[^\n]s", mapp[i].text[posEvento.Y][posEvento.X][j]);
+				fgets(mapp[i].text[posEvento.Y][posEvento.X][j], MAX, events[i]);
+				strtok(mapp[i].text[posEvento.Y][posEvento.X][j], "\n");
 				mapp[i].numTexto[posEvento.Y][posEvento.X]++;
-				if (fgetc(events[i]) == EOF)
+				if (feof(events[i]) != 0)
 					break;
 				j++;
 			}
