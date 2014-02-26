@@ -1,6 +1,4 @@
 ﻿#include "cabecera.h"
-#include <conio.h>
-#include <stdlib.h>
 
 mapeado *mapp;
 pos *tamMapa;

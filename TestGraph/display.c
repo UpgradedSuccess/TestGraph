@@ -1,17 +1,20 @@
 ﻿#include "cabecera.h"
 #include <stdlib.h>
+#include <conio.h>
+#include <string.h>
 
 mapeado *mapp;
 pos *tamMapa;
 pos VISION;
 pos INITPJ;
+pos pj;
 graphstruct graph;
 
 void display()
 {
 	int k, i, mapactual = 0, KEY = 1;
-	char **auxmap = 0;
-	pos pj, aux;
+	char **auxmap = 0, descripcion[10];
+	pos aux;
 
 	getch();
 	system("cls");
@@ -65,8 +68,17 @@ void display()
 			}
 			for (k = 0; k < VISION.X + 1; k++) //Bucle para mostrar el mapa
 				puts(auxmap[k]);
-			printf("\nMapa: %d\n%s", mapactual + 1, mapp[mapactual].desc[pj.Y][pj.X]);
+			if (mapp[mapactual].map[pj.Y][pj.X] == graph.PLAINS)
+				strcpy(descripcion, "Llanos");
+			else if (mapp[mapactual].map[pj.Y][pj.X] == graph.DOOR)
+				strcpy(descripcion, "Puerta");
+			else if (mapp[mapactual].map[pj.Y][pj.X] == graph.EVENT)
+			{
+				k = busquedaEvento();
+				strcpy(descripcion, evento[k].nombre);
+			}
+			printf("\nMapa: %d\n%s", mapactual + 1, descripcion);
 		}
-		colisiones(&pj, &mapactual, &KEY); //Colision
+		colisiones(&mapactual, &KEY); //Colision
 	} while (1);
 }
