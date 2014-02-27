@@ -1,10 +1,7 @@
 ﻿#include "cabecera.h"
 
-mapeado *mapp;
-pos *tamMapa;
 controls controles;
-pos VISION;
-pos INITPJ;
+pos VISION, INITPJ;
 graphstruct graph;
 
 int main()

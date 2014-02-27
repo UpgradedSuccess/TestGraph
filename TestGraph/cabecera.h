@@ -4,14 +4,13 @@
 typedef struct
 {
 	char **map;
-	int ***dest;
 } mapeado;
 
 typedef struct
 {
-	int map;
-	int X;
-	int Y;
+	int map[2];
+	int X[2];
+	int Y[2];
 }link;
 
 typedef struct
@@ -41,24 +40,21 @@ typedef struct
 
 typedef struct
 {
-	link posEvento;
+	pos posEvento;
 	char nombre[15];
-	char text[MAX][30];
+	char **text;
 	int numTexto;
 }eventstruct;
 
-extern mapeado *mapp;
+extern mapeado mapp;
 extern controls controles;
-extern pos VISION;
-extern pos INITPJ;
-extern pos *tamMapa;
+extern pos VISION, INITPJ, tamMapa, pj;
 extern graphstruct graph;
 extern eventstruct *evento;
-extern pos pj;
-extern int nummapas;
-extern int numevent;
+extern link *puertas;
+extern int numevent, mapactual, numlink;
 
-void colisiones(int*, int*);
+void colisiones(int*);
 void lectura();
 void display();
 void error(int);
@@ -66,3 +62,4 @@ void inicializacion();
 void instrucciones();
 void adminmenu();
 int busquedaEvento();
+void busquedaPuerta();

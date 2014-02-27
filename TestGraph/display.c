@@ -3,16 +3,14 @@
 #include <conio.h>
 #include <string.h>
 
-mapeado *mapp;
-pos *tamMapa;
-pos VISION;
-pos INITPJ;
-pos pj;
+mapeado mapp;
+pos VISION, INITPJ, tamMapa, pj;
 graphstruct graph;
+int mapactual;
 
 void display()
 {
-	int k, i, mapactual = 0, KEY = 1;
+	int k, i, KEY = 1;
 	char **auxmap = 0, descripcion[10];
 	pos aux;
 
@@ -22,9 +20,9 @@ void display()
 	pj.Y = INITPJ.Y;
 	do
 	{
-		auxmap = (char**)malloc(tamMapa[mapactual].X* sizeof(char*));
-		for (k = 0; k < tamMapa[mapactual].X; k++)
-			auxmap[k] = (char*)malloc(tamMapa[mapactual].Y* sizeof(char));
+		auxmap = (char**)malloc(tamMapa.X* sizeof(char*));
+		for (k = 0; k < tamMapa.X; k++)
+			auxmap[k] = (char*)malloc(tamMapa.Y* sizeof(char));
 		if (KEY == 1)
 		{
 			system("cls");
@@ -43,21 +41,21 @@ void display()
 						aux.X++;
 						continue;
 					}
-					if (k == (pj.X + (VISION.X + 1))) //Frontera del mapa
+					else if (k >= (pj.X + (VISION.X + 1))) //Frontera del mapa
 						auxmap[aux.Y][aux.X] = '\0';
 					else
 					{
-						if (k >= tamMapa[mapactual].X - 1 || k < 0 || i > tamMapa[mapactual].Y || i < 0) //Exterior del mapa
+						if (k >= tamMapa.X - 1 || i > tamMapa.Y || i < 0 || k < 0) //Exterior del mapa
 							continue;
 						else //Resto del mapa
 						{
-							if (mapp[mapactual].map[i][k] == '-')
+							if (mapp.map[i][k] == '-')
 								auxmap[aux.Y][aux.X] = graph.PLAINS;
-							else if (mapp[mapactual].map[i][k] == '#')
+							else if (mapp.map[i][k] == '#')
 								auxmap[aux.Y][aux.X] = graph.WALL;
-							else if (mapp[mapactual].map[i][k] == '!')
+							else if (mapp.map[i][k] == '!')
 								auxmap[aux.Y][aux.X] = graph.EVENT;
-							else if (mapp[mapactual].map[i][k] == 'E')
+							else if (mapp.map[i][k] == 'E')
 								auxmap[aux.Y][aux.X] = graph.DOOR;
 						}
 					}
@@ -68,17 +66,17 @@ void display()
 			}
 			for (k = 0; k < VISION.X + 1; k++) //Bucle para mostrar el mapa
 				puts(auxmap[k]);
-			if (mapp[mapactual].map[pj.Y][pj.X] == graph.PLAINS)
+			if (mapp.map[pj.Y][pj.X] == graph.PLAINS)
 				strcpy(descripcion, "Llanos");
-			else if (mapp[mapactual].map[pj.Y][pj.X] == graph.DOOR)
+			else if (mapp.map[pj.Y][pj.X] == graph.DOOR)
 				strcpy(descripcion, "Puerta");
-			else if (mapp[mapactual].map[pj.Y][pj.X] == graph.EVENT)
+			else if (mapp.map[pj.Y][pj.X] == graph.EVENT)
 			{
 				k = busquedaEvento();
 				strcpy(descripcion, evento[k].nombre);
 			}
 			printf("\nMapa: %d\n%s", mapactual + 1, descripcion);
 		}
-		colisiones(&mapactual, &KEY); //Colision
+		colisiones(&KEY); //Colision
 	} while (1);
 }

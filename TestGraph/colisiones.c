@@ -2,31 +2,29 @@
 #include <windows.h>
 #include <conio.h>
 
-mapeado *mapp;
-pos *tamMapa;
+mapeado mapp;
 controls controles;
-pos VISION;
-pos INITPJ;
-pos pj;
+pos VISION, INITPJ, pj;
 graphstruct graph;
-int numevent;
+link *puertas;
+int numevent, mapactual, numlink;
 
-void colisiones(int *mapactual, int *KEY)
+void colisiones(int *KEY)
 {
-	int k, i, j, sel;
+	int k, i, j;
 	char mov;
-	link aux;
+	pos aux;
 
 	mov = getch();
 	if (mov == controles.UP)
 	{
-		if (mapp[*mapactual].map[pj.Y - 1][pj.X] == '#')
+		if (mapp.map[pj.Y - 1][pj.X] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y - 1][pj.X] == '-' || mapp[*mapactual].map[pj.Y - 1][pj.X] == 'E' || mapp[*mapactual].map[pj.Y - 1][pj.X] == '!')
+		else if (mapp.map[pj.Y - 1][pj.X] == '-' || mapp.map[pj.Y - 1][pj.X] == 'E' || mapp.map[pj.Y - 1][pj.X] == '!')
 		{
 			if (pj.Y != 0)
 			{
@@ -40,13 +38,13 @@ void colisiones(int *mapactual, int *KEY)
 	}
 	else if (mov == controles.LEFT)
 	{
-		if (mapp[*mapactual].map[pj.Y][pj.X - 1] == '#')
+		if (mapp.map[pj.Y][pj.X - 1] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y][pj.X - 1] == '-' || mapp[*mapactual].map[pj.Y][pj.X - 1] == 'E' || mapp[*mapactual].map[pj.Y][pj.X - 1] == '!')
+		else if (mapp.map[pj.Y][pj.X - 1] == '-' || mapp.map[pj.Y][pj.X - 1] == 'E' || mapp.map[pj.Y][pj.X - 1] == '!')
 		{
 			if (pj.X != 0)
 			{
@@ -60,15 +58,15 @@ void colisiones(int *mapactual, int *KEY)
 	}
 	else if (mov == controles.DOWN)
 	{
-		if (mapp[*mapactual].map[pj.Y + 1][pj.X] == '#')
+		if (mapp.map[pj.Y + 1][pj.X] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y + 1][pj.X] == '-' || mapp[*mapactual].map[pj.Y + 1][pj.X] == 'E' || mapp[*mapactual].map[pj.Y + 1][pj.X] == '!')
+		else if (mapp.map[pj.Y + 1][pj.X] == '-' || mapp.map[pj.Y + 1][pj.X] == 'E' || mapp.map[pj.Y + 1][pj.X] == '!')
 		{
-			if (pj.Y != tamMapa[*mapactual].Y)
+			if (pj.Y != tamMapa.Y)
 			{
 				pj.Y++;
 				*KEY = 1;
@@ -80,15 +78,15 @@ void colisiones(int *mapactual, int *KEY)
 	}
 	else if (mov == controles.RIGHT)
 	{
-		if (mapp[*mapactual].map[pj.Y][pj.X + 1] == '#')
+		if (mapp.map[pj.Y][pj.X + 1] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y][pj.X + 1] == '-' || mapp[*mapactual].map[pj.Y][pj.X + 1] == 'E' || mapp[*mapactual].map[pj.Y][pj.X + 1] == '!')
+		else if (mapp.map[pj.Y][pj.X + 1] == '-' || mapp.map[pj.Y][pj.X + 1] == 'E' || mapp.map[pj.Y][pj.X + 1] == '!')
 		{
-			if (pj.X != tamMapa[*mapactual].X - 2)
+			if (pj.X != tamMapa.X - 2)
 			{
 				pj.X++;
 				*KEY = 1;
@@ -100,12 +98,12 @@ void colisiones(int *mapactual, int *KEY)
 	}
 	else if (mov == controles.ACTION)
 	{
-		if (mapp[*mapactual].map[pj.Y][pj.X] == '-')
+		if (mapp.map[pj.Y][pj.X] == '-')
 		{
 			*KEY = 0;
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y][pj.X] == '!')
+		else if (mapp.map[pj.Y][pj.X] == '!')
 		{
 			*KEY = 1;
 			k = busquedaEvento();
@@ -124,15 +122,11 @@ void colisiones(int *mapactual, int *KEY)
 			}
 			return;
 		}
-		else if (mapp[*mapactual].map[pj.Y][pj.X] == 'E')
+		else if (mapp.map[pj.Y][pj.X] == 'E')
 		{
 			*KEY = 1;
-			aux.map = mapp[*mapactual].dest[pj.Y][pj.X][0];
-			aux.Y = mapp[*mapactual].dest[pj.Y][pj.X][1];
-			aux.X = mapp[*mapactual].dest[pj.Y][pj.X][2];
-			*mapactual = aux.map;
-			pj.Y = aux.Y;
-			pj.X = aux.X;
+			busquedaPuerta();
+			lectura();
 		}
 		return;
 	}
@@ -174,13 +168,24 @@ void adminmenu()
 		case 2:
 			system("cls");
 			printf("Rango actual:\nX: %d\nY: %d\n\n", VISION.X, VISION.Y);
-			printf("Se recomienda que el rango en X sea Y + 2\n\n");
-			printf("Introduzca el rango de vision en X: ");
-			scanf("%d", &VISION.X);
-			printf("\nIntroduzca el rango de vision en Y: ");
-			scanf("%d", &VISION.Y);
-			fflush(stdin);
-			break;
+			printf("- Solo se aceptan valores mayores que 0 y menores que X=6 e Y=4.\n- X DEBE ser mayor que Y.\n- Se recomienda que X sea Y + 2.\n\n");
+			do
+			{
+				printf("Introduzca el rango de vision en X: ");
+				scanf("%d", &VISION.X);
+				fflush(stdin);
+				printf("\nIntroduzca el rango de vision en Y: ");
+				scanf("%d", &VISION.Y);
+				fflush(stdin);
+				if (VISION.X <= 0 || VISION.Y <= 0 || VISION.Y > VISION.X || VISION.X > 6 || VISION.Y > 4)
+				{
+					printf("\nAlguno de los valores introducidos no es correcto.\n\n\n");
+					getch();
+					continue;
+				}
+				else
+					return;
+			} while (1);
 		case 3:
 			system("cls");
 			printf("Posicion actual:\nX: %d\nY: %d\n\n", INITPJ.X, INITPJ.Y);
@@ -221,14 +226,31 @@ int busquedaEvento()
 	int k;
 
 	for (k = 0; k < numevent; k++)
+		if (pj.Y == evento[k].posEvento.Y && pj.X == evento[k].posEvento.X)
+			return k;
+	return -1;
+}
+
+void busquedaPuerta()
+{
+	int k;
+
+	for (k = 0; k < numlink; k++)
 	{
-		if (pj.Y == evento[k].posEvento.Y)
+		if (pj.Y == puertas[k].Y[0] && pj.X == puertas[k].X[0])
 		{
-			if (pj.X == evento[k].posEvento.X)
-			{
-				return k;
-			}
+			mapactual = puertas[k].map[1];
+			pj.Y = puertas[k].Y[1];
+			pj.X = puertas[k].X[1];
+			return;
+		}
+		if (pj.Y == puertas[k].Y[1] && pj.X == puertas[k].X[1])
+		{
+			mapactual = puertas[k].map[0];
+			pj.Y = puertas[k].Y[0];
+			pj.X = puertas[k].X[0];
+			return;
 		}
 	}
-	return 99;
+	return;
 }
