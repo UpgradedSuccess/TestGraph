@@ -3,21 +3,16 @@
 
 typedef struct
 {
-	char **map;
-} mapeado;
-
-typedef struct
-{
 	int map[2];
 	int X[2];
 	int Y[2];
-}link;
+} STRUCTlink;
 
 typedef struct
 {
 	int X;
 	int Y;
-}pos;
+} STRUCTpos;
 
 typedef struct
 {
@@ -27,7 +22,7 @@ typedef struct
 	char RIGHT;
 	char ACTION;
 	char SPECIAL;
-}controls;
+} STRUCTcontroles;
 
 typedef struct
 {
@@ -36,23 +31,23 @@ typedef struct
 	char EVENT;
 	char DOOR;
 	char PJ;
-}graphstruct;
+} STRUCTgraph;
 
 typedef struct
 {
-	pos posEvento;
+	STRUCTpos posEvento;
 	char nombre[15];
 	char **text;
 	int numTexto;
-}eventstruct;
+} STRUCTeventos;
 
-extern mapeado mapp;
-extern controls controles;
-extern pos VISION, INITPJ, tamMapa, pj;
-extern graphstruct graph;
-extern eventstruct *evento;
-extern link *puertas;
-extern int numevent, mapactual, numlink;
+extern char **map;
+extern STRUCTcontroles controles;
+extern STRUCTpos VISION, INITPJ, tamMapa, pj;
+extern STRUCTgraph graph;
+extern STRUCTeventos *evento;
+extern STRUCTlink *puertas;
+extern int numevento, mapactual, numlink;
 
 void colisiones(int*);
 void lectura();

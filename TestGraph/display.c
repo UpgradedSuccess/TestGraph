@@ -3,16 +3,16 @@
 #include <conio.h>
 #include <string.h>
 
-mapeado mapp;
-pos VISION, INITPJ, tamMapa, pj;
-graphstruct graph;
+char **map;
+STRUCTpos VISION, INITPJ, tamMapa, pj;
+STRUCTgraph graph;
 int mapactual;
 
 void display()
 {
 	int k, i, KEY = 1;
 	char **auxmap = 0, descripcion[10];
-	pos aux;
+	STRUCTpos aux;
 
 	getch();
 	system("cls");
@@ -49,13 +49,13 @@ void display()
 							continue;
 						else //Resto del mapa
 						{
-							if (mapp.map[i][k] == '-')
+							if (map[i][k] == '-')
 								auxmap[aux.Y][aux.X] = graph.PLAINS;
-							else if (mapp.map[i][k] == '#')
+							else if (map[i][k] == '#')
 								auxmap[aux.Y][aux.X] = graph.WALL;
-							else if (mapp.map[i][k] == '!')
+							else if (map[i][k] == '!')
 								auxmap[aux.Y][aux.X] = graph.EVENT;
-							else if (mapp.map[i][k] == 'E')
+							else if (map[i][k] == 'E')
 								auxmap[aux.Y][aux.X] = graph.DOOR;
 						}
 					}
@@ -66,11 +66,11 @@ void display()
 			}
 			for (k = 0; k < VISION.X + 1; k++) //Bucle para mostrar el mapa
 				puts(auxmap[k]);
-			if (mapp.map[pj.Y][pj.X] == graph.PLAINS)
+			if (map[pj.Y][pj.X] == graph.PLAINS)
 				strcpy(descripcion, "Llanos");
-			else if (mapp.map[pj.Y][pj.X] == graph.DOOR)
+			else if (map[pj.Y][pj.X] == graph.DOOR)
 				strcpy(descripcion, "Puerta");
-			else if (mapp.map[pj.Y][pj.X] == graph.EVENT)
+			else if (map[pj.Y][pj.X] == graph.EVENT)
 			{
 				k = busquedaEvento();
 				strcpy(descripcion, evento[k].nombre);

@@ -2,29 +2,29 @@
 #include <windows.h>
 #include <conio.h>
 
-mapeado mapp;
-controls controles;
-pos VISION, INITPJ, pj;
-graphstruct graph;
-link *puertas;
-int numevent, mapactual, numlink;
+char **map;
+STRUCTcontroles controles;
+STRUCTpos VISION, INITPJ, pj;
+STRUCTgraph graph;
+STRUCTlink *puertas;
+int numevento, mapactual, numlink;
 
 void colisiones(int *KEY)
 {
 	int k, i, j;
 	char mov;
-	pos aux;
+	STRUCTpos aux;
 
 	mov = getch();
 	if (mov == controles.UP)
 	{
-		if (mapp.map[pj.Y - 1][pj.X] == '#')
+		if (map[pj.Y - 1][pj.X] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp.map[pj.Y - 1][pj.X] == '-' || mapp.map[pj.Y - 1][pj.X] == 'E' || mapp.map[pj.Y - 1][pj.X] == '!')
+		else if (map[pj.Y - 1][pj.X] == '-' || map[pj.Y - 1][pj.X] == 'E' || map[pj.Y - 1][pj.X] == '!')
 		{
 			if (pj.Y != 0)
 			{
@@ -38,13 +38,13 @@ void colisiones(int *KEY)
 	}
 	else if (mov == controles.LEFT)
 	{
-		if (mapp.map[pj.Y][pj.X - 1] == '#')
+		if (map[pj.Y][pj.X - 1] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp.map[pj.Y][pj.X - 1] == '-' || mapp.map[pj.Y][pj.X - 1] == 'E' || mapp.map[pj.Y][pj.X - 1] == '!')
+		else if (map[pj.Y][pj.X - 1] == '-' || map[pj.Y][pj.X - 1] == 'E' || map[pj.Y][pj.X - 1] == '!')
 		{
 			if (pj.X != 0)
 			{
@@ -58,13 +58,13 @@ void colisiones(int *KEY)
 	}
 	else if (mov == controles.DOWN)
 	{
-		if (mapp.map[pj.Y + 1][pj.X] == '#')
+		if (map[pj.Y + 1][pj.X] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp.map[pj.Y + 1][pj.X] == '-' || mapp.map[pj.Y + 1][pj.X] == 'E' || mapp.map[pj.Y + 1][pj.X] == '!')
+		else if (map[pj.Y + 1][pj.X] == '-' || map[pj.Y + 1][pj.X] == 'E' || map[pj.Y + 1][pj.X] == '!')
 		{
 			if (pj.Y != tamMapa.Y)
 			{
@@ -78,13 +78,13 @@ void colisiones(int *KEY)
 	}
 	else if (mov == controles.RIGHT)
 	{
-		if (mapp.map[pj.Y][pj.X + 1] == '#')
+		if (map[pj.Y][pj.X + 1] == '#')
 		{
 			*KEY = 0;
 			printf("\a");
 			return;
 		}
-		else if (mapp.map[pj.Y][pj.X + 1] == '-' || mapp.map[pj.Y][pj.X + 1] == 'E' || mapp.map[pj.Y][pj.X + 1] == '!')
+		else if (map[pj.Y][pj.X + 1] == '-' || map[pj.Y][pj.X + 1] == 'E' || map[pj.Y][pj.X + 1] == '!')
 		{
 			if (pj.X != tamMapa.X - 2)
 			{
@@ -98,12 +98,12 @@ void colisiones(int *KEY)
 	}
 	else if (mov == controles.ACTION)
 	{
-		if (mapp.map[pj.Y][pj.X] == '-')
+		if (map[pj.Y][pj.X] == '-')
 		{
 			*KEY = 0;
 			return;
 		}
-		else if (mapp.map[pj.Y][pj.X] == '!')
+		else if (map[pj.Y][pj.X] == '!')
 		{
 			*KEY = 1;
 			k = busquedaEvento();
@@ -122,7 +122,7 @@ void colisiones(int *KEY)
 			}
 			return;
 		}
-		else if (mapp.map[pj.Y][pj.X] == 'E')
+		else if (map[pj.Y][pj.X] == 'E')
 		{
 			*KEY = 1;
 			busquedaPuerta();
@@ -130,7 +130,7 @@ void colisiones(int *KEY)
 		}
 		return;
 	}
-	if (mov == controles.SPECIAL)
+	else if (mov == controles.SPECIAL)
 		adminmenu();
 }
 
@@ -225,7 +225,7 @@ int busquedaEvento()
 {
 	int k;
 
-	for (k = 0; k < numevent; k++)
+	for (k = 0; k < numevento; k++)
 		if (pj.Y == evento[k].posEvento.Y && pj.X == evento[k].posEvento.X)
 			return k;
 	return -1;

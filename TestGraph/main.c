@@ -1,8 +1,8 @@
 ﻿#include "cabecera.h"
 
-controls controles;
-pos VISION, INITPJ;
-graphstruct graph;
+STRUCTcontroles controles;
+STRUCTpos VISION, INITPJ;
+STRUCTgraph graph;
 
 int main()
 {
