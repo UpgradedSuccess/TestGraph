@@ -76,7 +76,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="apoyo.c" />
+    <ClCompile Include="busquedaEvento.c" />
+    <ClCompile Include="busquedaPuerta.c" />
     <ClCompile Include="colisiones.c" />
+    <ClCompile Include="inicializacion.c" />
+    <ClCompile Include="movimiento.c" />
     <ClCompile Include="display.c" />
     <ClCompile Include="lectura.c" />
     <ClCompile Include="main.c" />
