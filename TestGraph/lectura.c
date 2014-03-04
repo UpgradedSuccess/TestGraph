@@ -3,33 +3,36 @@
 #include <stdlib.h>
 
 char **map;
-STRUCTpos tamMapa;
+STRUCTpos tamMapa = { 0 };
 STRUCTeventos *evento;
 STRUCTlink *puertas;
-int numevento, mapactual, numlink;
+int numevento = 0, mapactual, numlink;
 
 void lectura()
 {
-	int k, auxnumTexto;
-	char nombre[12], aux[15], buffer;
+	int k, auxnumTexto = 0;
+	char nombre[20], aux[3], buffer;
 	FILE *FILEmapa, *FILEeventos, *FILElinks;
 
-	FILElinks = fopen("links.txt", "rt");
-	strcpy(nombre, "mapa");
+	FILElinks = fopen("data\\links.txt", "rt");
+	strcpy(nombre, "data\\mapa");
 	strcat(nombre, itoa(mapactual + 1, aux, 10));
 	strcat(nombre, ".txt");
 	FILEmapa = fopen(nombre, "rt");
-	strcpy(nombre, "events");
+	if (FILEmapa == NULL)
+	{
+		printf("Error al abrir el archivo 'mapa%d.txt'\n", mapactual + 1);
+		exit(0);
+	}
+	strcpy(nombre, "data\\events");
 	strcat(nombre, itoa(mapactual + 1, aux, 10));
 	strcat(nombre, ".txt");
 	FILEeventos = fopen(nombre, "rt");
 	if (FILEeventos == NULL)
 	{
-		printf("Error al abrir el archivo 'FILEeventos%d.txt'\n", mapactual + 1);
+		printf("Error al abrir el archivo 'eventos%d.txt'\n", mapactual + 1);
 		exit(0);
 	}
-	tamMapa.X = 0;
-	tamMapa.Y = 0;
 	while (feof(FILEmapa) == 0)
 	{
 		if (fgetc(FILEmapa) == '\n')
@@ -46,27 +49,21 @@ void lectura()
 	rewind(FILEmapa);
 	tamMapa.X = 0;
 	tamMapa.Y = 0;
+	//##Lecura del mapa##//
 	while (feof(FILEmapa) == 0)
 	{
-		map[tamMapa.Y][tamMapa.X] = fgetc(FILEmapa);	//Almacenamiento del mapa.
+		map[tamMapa.Y][tamMapa.X] = fgetc(FILEmapa);
 		if (map[tamMapa.Y][tamMapa.X] == '\n')
 		{
-			tamMapa.Y++;	//El vector "tamMapa" se utiliza para ir apuntando a todos los tiles del mapa.
+			tamMapa.Y++;
 			tamMapa.X = 0;
 			continue;
 		}
 		tamMapa.X++;
 	}
 	fclose(FILEmapa);
-	//##Se añade \0 al final de cada línea para que no se solapen los saltos de línea (Tú déjalo como está)##//
-	for (k = 0; k < tamMapa.Y; k++)
-	{
-		map[k][tamMapa.X - 1] = 0;
-	}
-	//##Lectura y almacenamiento de los archivos de eventos##//
-	numevento = 0;
-	auxnumTexto = 0;
-	while (feof(FILEeventos) == 0)
+	//##Lectura de eventos##//
+	while (feof(FILEeventos) == 0) //Conteo y redimensión de las frases por evento
 	{
 		buffer = fgetc(FILEeventos);
 		if (buffer == '.')
@@ -108,7 +105,8 @@ void lectura()
 		}
 	}
 	fclose(FILEeventos);
-	while (feof(FILElinks) == 0) //Lectura del archivo de links
+	//##Lectura de links#//
+	while (feof(FILElinks) == 0) //Conteo y redimensión de links
 	{
 		if (fgetc(FILElinks) == '\n')
 			numlink++;
@@ -116,7 +114,7 @@ void lectura()
 	rewind(FILElinks);
 	puertas = (STRUCTlink*)malloc(numlink * sizeof(STRUCTlink));
 	k = 0;
-	while (feof(FILElinks) == 0) //Lectura del archivo de links
+	while (feof(FILElinks) == 0) //Lectura de links
 	{
 		fscanf(FILElinks, "%d %d %d\n", &puertas[k].map[0], &puertas[k].Y[0], &puertas[k].X[0]);
 		fscanf(FILElinks, "%d %d %d\n", &puertas[k].map[1], &puertas[k].Y[1], &puertas[k].X[1]);
@@ -134,12 +132,4 @@ void lectura()
 	}
 	fclose(FILElinks);
 	return;
-}
-
-void error(int err)
-{
-	switch (err)
-		case 1:
-			printf("Error de memoria.\n");
-			exit(0);
 }

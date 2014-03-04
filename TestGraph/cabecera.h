@@ -1,5 +1,4 @@
 ﻿#include <stdio.h>
-#define MAX 30
 
 typedef struct
 {
@@ -41,15 +40,15 @@ typedef struct
 	int numTexto;
 } STRUCTeventos;
 
-extern char **map;
 extern STRUCTcontroles controles;
 extern STRUCTpos VISION, INITPJ, tamMapa, pj;
 extern STRUCTgraph graph;
 extern STRUCTeventos *evento;
 extern STRUCTlink *puertas;
-extern int numevento, mapactual, numlink;
+extern int numevento, mapactual, numlink, updatemap, auxmalloc;
+extern char **map;
 
-void colisiones(int*);
+void movimiento();
 void lectura();
 void display();
 void error(int);
@@ -58,3 +57,4 @@ void instrucciones();
 void adminmenu();
 int busquedaEvento();
 void busquedaPuerta();
+int colisiones(char);

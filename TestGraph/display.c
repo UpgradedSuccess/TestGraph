@@ -6,11 +6,11 @@
 char **map;
 STRUCTpos VISION, INITPJ, tamMapa, pj;
 STRUCTgraph graph;
-int mapactual;
+int mapactual, auxmalloc;
 
 void display()
 {
-	int k, i, KEY = 1;
+	int k, i, updatemap = 1;
 	char **auxmap = 0, descripcion[10];
 	STRUCTpos aux;
 
@@ -18,18 +18,20 @@ void display()
 	system("cls");
 	pj.X = INITPJ.X;
 	pj.Y = INITPJ.Y;
+	auxmalloc = 1;
 	do
 	{
-		auxmap = (char**)malloc(tamMapa.X* sizeof(char*));
-		for (k = 0; k < tamMapa.X; k++)
-			auxmap[k] = (char*)malloc(tamMapa.Y* sizeof(char));
-		if (KEY == 1)
+		if (updatemap == 1)
 		{
 			system("cls");
+			if (auxmalloc != 0)
+			{
+				auxmap = (char**)malloc(tamMapa.X* sizeof(char*));
+				for (k = 0; k < tamMapa.X; k++)
+					auxmap[k] = (char*)malloc(tamMapa.Y* sizeof(char));
+			}
 			aux.Y = 0;
 			aux.X = 0;
-			k = 0;
-			i = 0;
 			//##Bucle usado para guardar una parte del mapa (definida por VISION.X y VISION.Y) en un mapa auxiliar para poder mostrarlo correctamente.
 			for (i = (pj.Y - VISION.Y); i < pj.Y + (VISION.Y + 1); i++)
 			{
@@ -64,7 +66,7 @@ void display()
 				aux.X = 0;
 				aux.Y++;
 			}
-			for (k = 0; k < VISION.X + 1; k++) //Bucle para mostrar el mapa
+			for (k = 0; k < VISION.X + 1; k++)
 				puts(auxmap[k]);
 			if (map[pj.Y][pj.X] == graph.PLAINS)
 				strcpy(descripcion, "Llanos");
@@ -77,6 +79,6 @@ void display()
 			}
 			printf("\nMapa: %d\n%s", mapactual + 1, descripcion);
 		}
-		colisiones(&KEY); //Colision
+		movimiento(&updatemap);
 	} while (1);
 }
