@@ -41,7 +41,7 @@ typedef struct
 } STRUCTeventos;
 
 extern STRUCTcontroles controles;
-extern STRUCTpos VISION, INITPJ, tamMapa, pj;
+extern STRUCTpos VISION, INITPJ, tamMapa, pj, TAMCMD;
 extern STRUCTgraph graph;
 extern STRUCTeventos *evento;
 extern STRUCTlink *puertas;

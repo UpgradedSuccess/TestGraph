@@ -11,26 +11,22 @@ int numevento = 0, mapactual, numlink;
 void lectura()
 {
 	int k, auxnumTexto = 0;
-	char nombre[20], aux[3], buffer;
+	char nombre[20], buffer;
 	FILE *FILEmapa, *FILEeventos, *FILElinks;
 
 	FILElinks = fopen("data\\links.txt", "rt");
-	strcpy(nombre, "data\\mapa");
-	strcat(nombre, itoa(mapactual + 1, aux, 10));
-	strcat(nombre, ".txt");
+	sprintf(nombre, "data\\mapa%d.txt", mapactual + 1);
 	FILEmapa = fopen(nombre, "rt");
 	if (FILEmapa == NULL)
 	{
 		printf("Error al abrir el archivo 'mapa%d.txt'\n", mapactual + 1);
 		exit(0);
 	}
-	strcpy(nombre, "data\\events");
-	strcat(nombre, itoa(mapactual + 1, aux, 10));
-	strcat(nombre, ".txt");
+	sprintf(nombre, "data\\events%d.txt", mapactual + 1);
 	FILEeventos = fopen(nombre, "rt");
 	if (FILEeventos == NULL)
 	{
-		printf("Error al abrir el archivo 'eventos%d.txt'\n", mapactual + 1);
+		printf("Error al abrir el archivo 'events%d.txt'\n", mapactual + 1);
 		exit(0);
 	}
 	while (feof(FILEmapa) == 0)

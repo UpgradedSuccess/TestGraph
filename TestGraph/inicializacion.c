@@ -1,7 +1,7 @@
 #include "cabecera.h"
 
 STRUCTcontroles controles;
-STRUCTpos VISION, INITPJ;
+STRUCTpos VISION, INITPJ, TAMCMD;
 STRUCTgraph graph;
 
 void inicializacion()
@@ -16,6 +16,8 @@ void inicializacion()
 	VISION.Y = 2;
 	INITPJ.X = 3;
 	INITPJ.Y = 3;
+	TAMCMD.X = 35;
+	TAMCMD.Y = 15;
 	graph.PLAINS = '-';
 	graph.WALL = '#';
 	graph.EVENT = '!';

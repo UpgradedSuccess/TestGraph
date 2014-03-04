@@ -4,14 +4,14 @@
 #include <string.h>
 
 char **map;
-STRUCTpos VISION, INITPJ, tamMapa, pj;
+STRUCTpos VISION, INITPJ, tamMapa, pj, TAMCMD;
 STRUCTgraph graph;
 int mapactual, auxmalloc;
 
 void display()
 {
 	int k, i, updatemap = 1;
-	char **auxmap = 0, descripcion[10];
+	char **auxmap = 0, descripcion[10], cmdSize[30];
 	STRUCTpos aux;
 
 	getch();
@@ -19,6 +19,8 @@ void display()
 	pj.X = INITPJ.X;
 	pj.Y = INITPJ.Y;
 	auxmalloc = 1;
+	sprintf(cmdSize, "mode con: cols=%d lines=%d", TAMCMD.X, TAMCMD.Y);
+	system(cmdSize);
 	do
 	{
 		if (updatemap == 1)
