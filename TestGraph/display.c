@@ -1,12 +1,4 @@
 ﻿#include "cabecera.h"
-#include <stdlib.h>
-#include <conio.h>
-#include <string.h>
-
-char **map;
-STRUCTpos VISION, INITPJ, tamMapa, pj, TAMCMD;
-STRUCTgraph graph;
-int mapactual, auxmalloc;
 
 void display()
 {
@@ -19,7 +11,7 @@ void display()
 	pj.X = INITPJ.X;
 	pj.Y = INITPJ.Y;
 	auxmalloc = 1;
-	sprintf(cmdSize, "mode con: cols=%d lines=%d", TAMCMD.X, TAMCMD.Y);
+	sprintf(cmdSize, "mode con: cols=%d lines=%d", TAMCMD.Y, TAMCMD.X);
 	system(cmdSize);
 	do
 	{

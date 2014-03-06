@@ -1,12 +1,4 @@
 ﻿#include "cabecera.h"
-#include <string.h>
-#include <stdlib.h>
-
-char **map;
-STRUCTpos tamMapa = { 0 };
-STRUCTeventos *evento;
-STRUCTlink *puertas;
-int numevento = 0, mapactual, numlink;
 
 void lectura()
 {
@@ -14,19 +6,11 @@ void lectura()
 	char nombre[20], buffer;
 	FILE *FILEmapa, *FILEeventos, *FILElinks;
 
-	FILElinks = fopen("data\\links.txt", "rt");
 	sprintf(nombre, "data\\mapa%d.txt", mapactual + 1);
 	FILEmapa = fopen(nombre, "rt");
 	if (FILEmapa == NULL)
 	{
 		printf("Error al abrir el archivo 'mapa%d.txt'\n", mapactual + 1);
-		exit(0);
-	}
-	sprintf(nombre, "data\\events%d.txt", mapactual + 1);
-	FILEeventos = fopen(nombre, "rt");
-	if (FILEeventos == NULL)
-	{
-		printf("Error al abrir el archivo 'events%d.txt'\n", mapactual + 1);
 		exit(0);
 	}
 	while (feof(FILEmapa) == 0)
@@ -59,6 +43,13 @@ void lectura()
 	}
 	fclose(FILEmapa);
 	//##Lectura de eventos##//
+	sprintf(nombre, "data\\events%d.txt", mapactual + 1);
+	FILEeventos = fopen(nombre, "rt");
+	if (FILEeventos == NULL)
+	{
+		printf("Error al abrir el archivo 'events%d.txt'\n", mapactual + 1);
+		exit(0);
+	}
 	while (feof(FILEeventos) == 0) //Conteo y redimensión de las frases por evento
 	{
 		buffer = fgetc(FILEeventos);
@@ -102,6 +93,14 @@ void lectura()
 	}
 	fclose(FILEeventos);
 	//##Lectura de links#//
+	FILElinks = fopen("data\\links.txt", "rt");
+	if (FILElinks == NULL)
+	{
+		printf("Error al abrir archivo de links.\n"
+			"Se continuara, pero no habra puertas");
+		getch();
+		return;
+	}
 	while (feof(FILElinks) == 0) //Conteo y redimensión de links
 	{
 		if (fgetc(FILElinks) == '\n')

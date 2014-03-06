@@ -81,6 +81,7 @@
     <ClCompile Include="busquedaPuerta.c" />
     <ClCompile Include="colisiones.c" />
     <ClCompile Include="inicializacion.c" />
+    <ClCompile Include="menus.c" />
     <ClCompile Include="movimiento.c" />
     <ClCompile Include="display.c" />
     <ClCompile Include="lectura.c" />

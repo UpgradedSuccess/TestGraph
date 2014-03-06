@@ -1,9 +1,5 @@
 #include "cabecera.h"
 
-int auxmalloc, numlink, updatemap;
-STRUCTlink *puertas;
-STRUCTpos pj;
-
 void busquedaPuerta()
 {
 	int k;

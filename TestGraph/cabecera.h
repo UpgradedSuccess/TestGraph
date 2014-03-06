@@ -1,5 +1,24 @@
 ﻿#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+#include <windows.h>
+#include <locale.h>
 
+typedef struct
+{
+	char nombre[15];
+	int STR;
+	int DEF;
+	int ACC;
+	int INT;
+	int weapEquip;
+	int armorEquip;
+	int invent;
+	int minDmg;
+	int maxDmg;
+	int inventario[4][2];
+} STRUCTpersonaje;
 typedef struct
 {
 	int map[2];
@@ -21,6 +40,7 @@ typedef struct
 	char RIGHT;
 	char ACTION;
 	char SPECIAL;
+	char MENU;
 } STRUCTcontroles;
 
 typedef struct
@@ -40,12 +60,23 @@ typedef struct
 	int numTexto;
 } STRUCTeventos;
 
+typedef struct
+{
+	char nombre[15];
+	int minDmg;
+	int maxDmg;
+	int def;
+	int tipo;
+}STRUCTitem;
+
 extern STRUCTcontroles controles;
 extern STRUCTpos VISION, INITPJ, tamMapa, pj, TAMCMD;
 extern STRUCTgraph graph;
 extern STRUCTeventos *evento;
 extern STRUCTlink *puertas;
-extern int numevento, mapactual, numlink, updatemap, auxmalloc;
+extern STRUCTpersonaje personaje;
+extern STRUCTitem *items;
+extern int numevento, mapactual, numlink, updatemap, auxmalloc, numitems, numinv;
 extern char **map;
 
 void movimiento();
@@ -58,3 +89,4 @@ void adminmenu();
 int busquedaEvento();
 void busquedaPuerta();
 int colisiones(char);
+void pjmenu();
