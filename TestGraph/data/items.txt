@@ -1,0 +1,8 @@
++Espada
+1 3
+-Armadura
+3
++Mandoble
+4 5
+-Trapos
+1
