@@ -2,7 +2,7 @@
 
 void display()
 {
-	int k, i, updatemap = 1;
+	int k, i, updatemap = 1, bat;
 	char **auxmap = 0, descripcion[10], cmdSize[30];
 	STRUCTpos aux;
 
@@ -17,6 +17,9 @@ void display()
 	{
 		if (updatemap == 1)
 		{
+			bat = rand() % 6;
+			if (bat == 0)
+				batalla();
 			system("cls");
 			if (auxmalloc != 0)
 			{

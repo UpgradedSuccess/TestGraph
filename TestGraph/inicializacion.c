@@ -11,13 +11,14 @@ void inicializacion()
 	controles.LEFT = 'a';
 	controles.RIGHT = 'd';
 	controles.ACTION = 'e';
+	controles.BACK = 'q';
 	controles.SPECIAL = 'p';
 	controles.MENU = 'm';
 	VISION.X = 4;
 	VISION.Y = 2;
 	INITPJ.X = 3;
 	INITPJ.Y = 3;
-	TAMCMD.X = 16;
+	TAMCMD.X = 20;
 	TAMCMD.Y = 36;
 	graph.PLAINS = '-';
 	graph.WALL = '#';
@@ -63,6 +64,12 @@ void inicializacion()
 	}
 	fclose(FILEitems);
 	strcpy(personaje.nombre, "Personaje");
+	personaje.HP = 30;
+	personaje.MP = 10 + (personaje.INT / 10);
+	personaje.HPLEFT = personaje.HP;
+	personaje.MPLEFT = personaje.MP;
+	personaje.LVL = 1;
+	personaje.EXP = 0;
 	personaje.STR = 10;
 	personaje.ACC = 10;
 	personaje.DEF = 10;

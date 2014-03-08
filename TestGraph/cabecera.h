@@ -4,10 +4,17 @@
 #include <string.h>
 #include <windows.h>
 #include <locale.h>
+#include <time.h>
 
 typedef struct
 {
 	char nombre[15];
+	int HP;
+	int HPLEFT;
+	int MP;
+	int MPLEFT;
+	int LVL;
+	int EXP;
 	int STR;
 	int DEF;
 	int ACC;
@@ -21,16 +28,37 @@ typedef struct
 } STRUCTpersonaje;
 typedef struct
 {
+	int X;
+	int Y;
+} STRUCTpos;
+typedef struct
+{
+	char nombre[15];
+	int minHP;
+	int maxHP;
+	int minDmg;
+	int maxDmg;
+	int minEXP;
+	int maxEXP;
+	int num;
+	char graph;
+} STRUCTenemigos;
+typedef struct
+{
+	char nombre[15];
+	int HP;
+	int minDmg;
+	int maxDmg;
+	int EXP;
+	char graph;
+	STRUCTpos pos;
+} STRUCTenemigosSPAWN;
+typedef struct
+{
 	int map[2];
 	int X[2];
 	int Y[2];
 } STRUCTlink;
-
-typedef struct
-{
-	int X;
-	int Y;
-} STRUCTpos;
 
 typedef struct
 {
@@ -39,6 +67,7 @@ typedef struct
 	char LEFT;
 	char RIGHT;
 	char ACTION;
+	char BACK;
 	char SPECIAL;
 	char MENU;
 } STRUCTcontroles;
@@ -76,7 +105,7 @@ extern STRUCTeventos *evento;
 extern STRUCTlink *puertas;
 extern STRUCTpersonaje personaje;
 extern STRUCTitem *items;
-extern int numevento, mapactual, numlink, updatemap, auxmalloc, numitems, numinv;
+extern int numevento, mapactual, numlink, updatemap, auxmalloc, numitems, numinv, numenemigos;
 extern char **map;
 
 void movimiento();
@@ -90,3 +119,6 @@ int busquedaEvento();
 void busquedaPuerta();
 int colisiones(char);
 void pjmenu();
+void batalla();
+int menuFlecha(int, int);
+void defeat();

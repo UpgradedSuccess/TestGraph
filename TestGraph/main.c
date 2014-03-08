@@ -9,10 +9,11 @@ STRUCTpos tamMapa = { 0 };
 STRUCTeventos *evento;
 STRUCTlink *puertas;
 char **map;
-int auxmalloc, updatemap, numinv = 4, numevento = 0, mapactual, numlink, numitems = 0;
+int auxmalloc, updatemap, numinv = 4, numevento = 0, mapactual, numlink, numitems = 0, numenemigos = 0;
 
 int main()
 {
+	srand(time(0));
 	setlocale(LC_CTYPE, "Spanish");
 
 	inicializacion();
