@@ -97,7 +97,7 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 	} while (1);
 }
 
-void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje)
+void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
 	int flecha = 1, k, i = 1, aux = 0, sel, numinv = 4;
 

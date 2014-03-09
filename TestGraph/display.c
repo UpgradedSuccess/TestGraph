@@ -1,6 +1,6 @@
 ﻿#include "cabecera.h"
 
-void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STRUCTpos *tamMapa, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
+void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STRUCTpos *tamMapa, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, char ***map, STRUCTeventos **evento, STRUCTitem *items, STRUCTlink **puertas)
 {
 	int k, i, updatemap = 1, bat, auxmalloc;
 	char **auxmap = 0, descripcion[10];
@@ -15,9 +15,9 @@ void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STR
 	{
 		if (updatemap == 1)
 		{
-			bat = rand() % 10;
-			if (bat == 0)
-				batalla(*controles, personaje);
+//			bat = rand() % 10;
+//			if (bat == 0)
+//				batalla(*controles, personaje);
 			system("cls");
 			if (auxmalloc != 0)
 			{
@@ -46,13 +46,13 @@ void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STR
 							continue;
 						else //Resto del mapa
 						{
-							if (map[i][k] == '-')
+							if ((*map)[i][k] == '-')
 								auxmap[aux.Y][aux.X] = graph->PLAINS;
-							else if (map[i][k] == '#')
+							else if ((*map)[i][k] == '#')
 								auxmap[aux.Y][aux.X] = graph->WALL;
-							else if (map[i][k] == '!')
+							else if ((*map)[i][k] == '!')
 								auxmap[aux.Y][aux.X] = graph->EVENT;
-							else if (map[i][k] == 'E')
+							else if ((*map)[i][k] == 'E')
 								auxmap[aux.Y][aux.X] = graph->DOOR;
 						}
 					}
@@ -63,17 +63,17 @@ void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STR
 			}
 			for (k = 0; k < VISION->X + 1; k++)
 				puts(auxmap[k]);
-			if (map[pj.Y][pj.X] == graph->PLAINS)
+			if ((*map)[pj.Y][pj.X] == graph->PLAINS)
 				strcpy(descripcion, "Llanos");
-			else if (map[pj.Y][pj.X] == graph->DOOR)
+			else if ((*map)[pj.Y][pj.X] == graph->DOOR)
 				strcpy(descripcion, "Puerta");
-			else if (map[pj.Y][pj.X] == graph->EVENT)
+			else if ((*map)[pj.Y][pj.X] == graph->EVENT)
 			{
-				k = busquedaEvento(numevento, pj);
-				strcpy(descripcion, evento[k].nombre);
+				k = busquedaEvento(numevento, pj, evento);
+				strcpy(descripcion, (*evento)[k].nombre);
 			}
 			printf("\nMapa: %d\n%s", (*mapactual) + 1, descripcion);
 		}
-		movimiento(numevento, mapactual, numlink, &updatemap, &auxmalloc, VISION, &pj, tamMapa, graph, controles, personaje);
+		movimiento(numevento, mapactual, numlink, &updatemap, &auxmalloc, VISION, &pj, tamMapa, graph, controles, personaje, map, evento, items, puertas);
 	} while (1);
 }

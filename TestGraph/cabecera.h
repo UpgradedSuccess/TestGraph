@@ -98,22 +98,17 @@ typedef struct
 	int tipo;
 }STRUCTitem;
 
-extern STRUCTeventos *evento;
-extern STRUCTlink *puertas;
-extern STRUCTitem *items;
-extern char **map;
-
-void movimiento(int, int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
-void lectura(int*, int*, int*, STRUCTpos*);
-void display(int, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
+void movimiento(int, int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
+void lectura(int*, int*, int*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
+void display(int, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
 void error(int);
-void inicializacion(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
+void inicializacion(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, STRUCTitem**);
 void instrucciones();
 void adminmenu(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
-int busquedaEvento(int, STRUCTpos);
-void busquedaPuerta(int*, int*, int*, int*, STRUCTpos*, STRUCTpos*);
+int busquedaEvento(int, STRUCTpos, STRUCTeventos**);
+void busquedaPuerta(int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
 int colisiones(char);
-void pjmenu(STRUCTcontroles, STRUCTpersonaje*);
+void pjmenu(STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*);
 void batalla(STRUCTcontroles, STRUCTpersonaje*);
 int menuFlecha(int, int, STRUCTcontroles);
 void defeat();

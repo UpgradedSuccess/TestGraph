@@ -1,6 +1,6 @@
 #include "cabecera.h"
 
-void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
+void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, STRUCTitem **items)
 {
 	FILE *FILEitems;
 	int k = 0, numitems = 0;
@@ -38,8 +38,8 @@ void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *cont
 		}
 	}
 	numitems = numitems / 2;
-	items = (STRUCTitem*)malloc(numitems * sizeof(STRUCTitem));
-	if (items == NULL)
+	(*items) = (STRUCTitem*)malloc(numitems * sizeof(STRUCTitem));
+	if ((*items) == NULL)
 		error(1);
 	rewind(FILEitems);
 	for (k = 0; k < numitems; k++)
@@ -47,16 +47,16 @@ void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *cont
 		buffer = fgetc(FILEitems);
 		if (buffer == '+')
 		{
-			fscanf(FILEitems, "%[^\n]s", items[k].nombre);
-			fscanf(FILEitems, "%d %d", &items[k].minDmg, &items[k].maxDmg);
-			items[k].tipo = 0;
+			fscanf(FILEitems, "%[^\n]s", (*items)[k].nombre);
+			fscanf(FILEitems, "%d %d", &(*items)[k].minDmg, &(*items)[k].maxDmg);
+			(*items)[k].tipo = 0;
 			fgetc(FILEitems);
 		}
 		else if (buffer == '-')
 		{
-			fscanf(FILEitems, "%[^\n]s", items[k].nombre);
-			fscanf(FILEitems, "%d", &items[k].def);
-			items[k].tipo = 1;
+			fscanf(FILEitems, "%[^\n]s", (*items)[k].nombre);
+			fscanf(FILEitems, "%d", &(*items)[k].def);
+			(*items)[k].tipo = 1;
 			fgetc(FILEitems);
 		}
 	}
@@ -74,8 +74,8 @@ void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *cont
 	personaje->DEF = 10;
 	personaje->weapEquip = 0;
 	personaje->armorEquip = 1;
-	personaje->minDmg = items[personaje->weapEquip].minDmg + (personaje->STR / 10);
-	personaje->maxDmg = items[personaje->weapEquip].maxDmg + (personaje->STR / 10);
+	personaje->minDmg = (*items)[personaje->weapEquip].minDmg + (personaje->STR / 10);
+	personaje->maxDmg = (*items)[personaje->weapEquip].maxDmg + (personaje->STR / 10);
 	personaje->inventario[0][0] = 0;
 	personaje->inventario[1][0] = 1;
 	personaje->inventario[0][1] = 1;

@@ -1,26 +1,26 @@
 #include "cabecera.h"
 
-void busquedaPuerta(int *numevento, int *mapactual, int *numlink, int *updatemap, STRUCTpos *pj, STRUCTpos *tamMapa)
+void busquedaPuerta(int *numevento, int *mapactual, int *numlink, int *updatemap, STRUCTpos *pj, STRUCTpos *tamMapa, char ***map, STRUCTeventos **evento, STRUCTlink **puertas)
 {
 	int k;
 
 	for (k = 0; k < (*numlink); k++)
 	{
-		if (pj->Y == puertas[k].Y[0] && pj->X == puertas[k].X[0])
+		if (pj->Y == (*puertas)[k].Y[0] && pj->X == (*puertas)[k].X[0])
 		{
-			(*mapactual) = puertas[k].map[1];
-			pj->Y = puertas[k].Y[1];
-			pj->X = puertas[k].X[1];
-			lectura(numevento, mapactual, numlink, tamMapa);
+			(*mapactual) = (*puertas)[k].map[1];
+			pj->Y = (*puertas)[k].Y[1];
+			pj->X = (*puertas)[k].X[1];
+			lectura(numevento, mapactual, numlink, tamMapa, map, evento, puertas);
 			(*updatemap) = 1;
 			return;
 		}
-		if (pj->Y == puertas[k].Y[1] && pj->X == puertas[k].X[1])
+		if (pj->Y == (*puertas)[k].Y[1] && pj->X == (*puertas)[k].X[1])
 		{
-			(*mapactual) = puertas[k].map[0];
-			pj->Y = puertas[k].Y[0];
-			pj->X = puertas[k].X[0];
-			lectura(numevento, mapactual, numlink, tamMapa);
+			(*mapactual) = (*puertas)[k].map[0];
+			pj->Y = (*puertas)[k].Y[0];
+			pj->X = (*puertas)[k].X[0];
+			lectura(numevento, mapactual, numlink, tamMapa, map, evento, puertas);
 			(*updatemap) = 1;
 			return;
 		}
