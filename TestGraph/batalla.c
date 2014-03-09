@@ -3,7 +3,7 @@
 void batalla()
 {
 	int k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt;
-	char mapaBatalla[5][11], mov;
+	char mov, mapaBatalla[5][11];
 	FILE *FILEmapaBatalla, *FILEenemigos;
 	STRUCTpos pjBatalla;
 	STRUCTenemigos *enemigos;
@@ -50,48 +50,51 @@ void batalla()
 		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minHP, &enemigos[k].maxHP);
 		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minDmg, &enemigos[k].maxDmg);
 		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minEXP, &enemigos[k].maxEXP);
-		if (strcmp(enemigos[k].nombre, "Goblin") == 0)
-			enemigos[k].graph = 'G';
+		enemigos[k].graph = enemigos[k].nombre[0];
 	}
-	enemigosSPAWN = (STRUCTenemigosSPAWN*)malloc(10 * sizeof(STRUCTenemigosSPAWN));
+	fclose(FILEenemigos);
+	enemigosSPAWN = (STRUCTenemigosSPAWN*)malloc(1 * sizeof(STRUCTenemigosSPAWN));
+	l = 0;
 	for (k = 0; k < numenemigos; k++)
 	{
+		if (numSpawn >= 4)
+			break;
 		enemigos[k].num = rand() % 3 + 1;
 		numSpawn = numSpawn + enemigos[k].num;
 		enemigosSPAWN = (STRUCTenemigosSPAWN*)realloc(enemigosSPAWN, numSpawn * sizeof(STRUCTenemigosSPAWN));
 		for (i = 0; i < enemigos[k].num; i++)
 		{
-			sprintf(enemigosSPAWN[i].nombre, "%s %d", enemigos[k].nombre, i + 1);
-			enemigosSPAWN[i].minDmg = enemigos[k].minDmg;
-			enemigosSPAWN[i].maxDmg = enemigos[k].maxDmg;
-			enemigosSPAWN[i].graph = enemigos[k].graph;
+			sprintf(enemigosSPAWN[l].nombre, "%s %d", enemigos[k].nombre, i + 1);
+			enemigosSPAWN[l].minDmg = enemigos[k].minDmg;
+			enemigosSPAWN[l].maxDmg = enemigos[k].maxDmg;
+			enemigosSPAWN[l].graph = enemigos[k].graph;
 			RANDMIN = enemigos[k].minHP;
 			RANDMAX = enemigos[k].maxHP - enemigos[k].minHP;
-			enemigosSPAWN[i].HP = rand() % RANDMAX + RANDMIN;
+			enemigosSPAWN[l].HP = rand() % RANDMAX + RANDMIN;
 			RANDMIN = enemigos[k].minEXP;
 			RANDMAX = enemigos[k].maxEXP - enemigos[k].minEXP;
-			enemigosSPAWN[i].EXP = rand() % RANDMAX + RANDMIN;
-			enemigosSPAWN[i].pos.X = rand() % 8 + 1;
-			enemigosSPAWN[i].pos.Y = rand() % 3 + 1;
-			if (enemigosSPAWN[i].pos.X == 4 && enemigosSPAWN[i].pos.Y == 3)
+			enemigosSPAWN[l].EXP = rand() % RANDMAX + RANDMIN;
+			enemigosSPAWN[l].pos.X = rand() % 8 + 1;
+			enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
+			while (enemigosSPAWN[l].pos.X == 4 && enemigosSPAWN[l].pos.Y == 3)
 			{
-				enemigosSPAWN[i].pos.X = rand() % 8 + 1;
-				enemigosSPAWN[i].pos.Y = rand() % 3 + 1;
+				enemigosSPAWN[l].pos.X = rand() % 8 + 1;
+				enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
 			}
 			for (j = 0; j < i; j++)
 			{
-				if (enemigosSPAWN[i].pos.X == enemigosSPAWN[j].pos.X && enemigosSPAWN[i].pos.Y == enemigosSPAWN[j].pos.Y)
+				if (enemigosSPAWN[l].pos.X == enemigosSPAWN[j].pos.X && enemigosSPAWN[l].pos.Y == enemigosSPAWN[j].pos.Y)
 				{
-					enemigosSPAWN[i].pos.X = rand() % 8 + 1;
-					enemigosSPAWN[i].pos.Y = rand() % 3 + 1;
+					enemigosSPAWN[l].pos.X = rand() % 8 + 1;
+					enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
 				}
 			}
+			l++;
 		}
 	}
-	fclose(FILEenemigos);
 	do
 	{
-		if (personaje.HP <= 0)
+		if (personaje.HPLEFT <= 0)
 			defeat();
 		system("cls");
 		if (update == 1)
@@ -116,11 +119,14 @@ void batalla()
 			printf("  Atacar\n");
 			if (flecha == 3)
 				printf("->");
+			printf("  Esperar\n");
+			if (flecha == 4)
+				printf("->");
 			printf("  Huir\n");
-			printf("\n\nHP: %d\n"
-				"MP: %d\n", personaje.HP, personaje.MP);
+			printf("\n\nHP: %d / %d\n"
+				"MP: %d % d\n", personaje.HPLEFT, personaje.HP, personaje.MPLEFT, personaje.MP);
 			sel = flecha;
-			flecha = menuFlecha(3, flecha);
+			flecha = menuFlecha(4, flecha);
 			if (flecha == 0)
 			{
 				flecha = 1;
@@ -218,6 +224,12 @@ void batalla()
 					do
 					{
 						system("cls");
+						if (numprintEnemy == 0)
+						{
+							printf("No hay ningún enemigo al alcance.");
+							getch();
+							break;
+						}
 						for (l = 1; l < numprintEnemy + 1; l++)
 						{
 							if (l == m)
@@ -267,17 +279,21 @@ void batalla()
 							break;
 						}
 						else if (m == -1)
-						{
 							break;
-						}
+						else if (m == -2)
+							m = l;
 					} while (1);
 					break;
 				case 3:
-					if (rand() % 3 == 0)
+					turno++;
+					break;
+				case 4:
+					if (rand() % 2 == 0)
 						return;
 					printf("\nNo pudiste escapar!");
 					getch();
 					turno++;
+					break;
 				}
 			}
 		}
@@ -289,8 +305,12 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HP = personaje.HP - dmgdealt;
+				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				if (turno == numSpawn)
+					turno = 0;
+				else
+					turno++;
 				getch();
 			}
 			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1] == '*')
@@ -298,8 +318,12 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HP = personaje.HP - dmgdealt;
+				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				if (turno == numSpawn)
+					turno = 0;
+				else
+					turno++;
 				getch();
 			}
 			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X] == '*')
@@ -307,8 +331,12 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HP = personaje.HP - dmgdealt;
+				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				if (turno == numSpawn)
+					turno = 0;
+				else
+					turno++;
 				getch();
 			}
 			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X] == '*')
@@ -316,85 +344,80 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HP = personaje.HP - dmgdealt;
+				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				if (turno == numSpawn)
+					turno = 0;
+				else
+					turno++;
 				getch();
 			}
 			else
 			{
 				if (enemigosSPAWN[turno - 1].pos.X < pjBatalla.X)
 				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1] == 'G')
-					{
-						if (turno == numSpawn)
-							turno = 0;
-						else
-							turno++;
-						continue;
-					}
-					else
+					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1]  == '-')
 					{
 						update = 1;
 						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
 						enemigosSPAWN[turno - 1].pos.X++;
-					}
-				}
-				else if (enemigosSPAWN[turno - 1].pos.X > pjBatalla.X)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1] == 'G')
-					{
 						if (turno == numSpawn)
 							turno = 0;
 						else
 							turno++;
 						continue;
 					}
-					else
+				}
+				if (enemigosSPAWN[turno - 1].pos.X > pjBatalla.X)
+				{
+					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1] == '-')
 					{
 						update = 1;
 						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
 						enemigosSPAWN[turno - 1].pos.X--;
-					}
-				}
-				else if (enemigosSPAWN[turno - 1].pos.Y < pjBatalla.Y)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X] == 'G')
-					{
 						if (turno == numSpawn)
 							turno = 0;
 						else
 							turno++;
 						continue;
 					}
-					else
+				}
+				if (enemigosSPAWN[turno - 1].pos.Y < pjBatalla.Y)
+				{
+					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X] == '-')
 					{
 						update = 1;
 						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
 						enemigosSPAWN[turno - 1].pos.Y++;
-					}
-				}
-				else if (enemigosSPAWN[turno - 1].pos.Y > pjBatalla.Y)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X] == 'G')
-					{
 						if (turno == numSpawn)
 							turno = 0;
 						else
 							turno++;
 						continue;
 					}
-					else
+				}
+				if (enemigosSPAWN[turno - 1].pos.Y > pjBatalla.Y)
+				{
+					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X]  == '-')
 					{
 						update = 1;
 						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
 						enemigosSPAWN[turno - 1].pos.Y--;
+						if (turno == numSpawn)
+							turno = 0;
+						else
+							turno++;
+						continue;
 					}
 				}
+				else
+				{
+					if (turno == numSpawn)
+						turno = 0;
+					else
+						turno++;
+				}
 			}
-			if (turno == numSpawn)
-				turno = 0;
-			else
-				turno++;
 		}
 		if (flecha == -1 || flecha == -2)
 			flecha = sel;

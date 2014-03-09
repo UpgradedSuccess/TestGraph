@@ -148,7 +148,7 @@ void pjmenu()
 					"Puntería: %d\n"
 					"Inteligencia: %d\n\n"
 					"Daño efectivo: %d - %d\n"
-					, personaje.nombre, personaje.HP, personaje.HPLEFT, personaje.MP, personaje.MPLEFT, personaje.LVL, personaje.EXP, personaje.LVL * 150, personaje.STR, personaje.DEF, items[personaje.armorEquip].def, personaje.ACC, personaje.INT, personaje.minDmg, personaje.maxDmg);
+					, personaje.nombre, personaje.HPLEFT, personaje.HP, personaje.MPLEFT, personaje.MP, personaje.LVL, personaje.EXP, personaje.LVL * 150, personaje.STR, personaje.DEF, items[personaje.armorEquip].def, personaje.ACC, personaje.INT, personaje.minDmg, personaje.maxDmg);
 				getch();
 				break;
 			case 2:
