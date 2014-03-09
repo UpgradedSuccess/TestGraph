@@ -15,9 +15,9 @@ void display(int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STR
 	{
 		if (updatemap == 1)
 		{
-//			bat = rand() % 10;
-//			if (bat == 0)
-//				batalla(*controles, personaje);
+			bat = rand() % 10;
+			if (bat == 0)
+				batalla(*controles, personaje);
 			system("cls");
 			if (auxmalloc != 0)
 			{
