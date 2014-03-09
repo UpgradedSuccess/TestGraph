@@ -17,7 +17,7 @@ void display()
 	{
 		if (updatemap == 1)
 		{
-			bat = rand() % 6;
+			bat = rand() % 10;
 			if (bat == 0)
 				batalla();
 			system("cls");
