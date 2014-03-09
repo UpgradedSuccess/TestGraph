@@ -1,10 +1,6 @@
 #include "cabecera.h"
 
-int numevento;
-STRUCTpos pj;
-STRUCTeventos *evento;
-
-int busquedaEvento()
+int busquedaEvento(int numevento, STRUCTpos pj)
 {
 	int k;
 

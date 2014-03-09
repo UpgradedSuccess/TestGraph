@@ -16,15 +16,15 @@ void instrucciones()
 		"Movimiento: 'wasd'\n"
 		"Interacción: 'e'\n"
 		"Atrás : 'q'\n"
-		"Men・ 'm'\n"
-		"Men・de administrador: 'p'\n\n"
+		"Menú 'm'\n"
+		"Menúde administrador: 'p'\n\n"
 		"Leyenda:\n"
 		"Muros: '#'\n"
 		"Puertas: 'E'\n"
 		"Llanos: '-'\n"
 		"Eventos: '!'\n"
 		"Personaje: '*'\n\n"
-		"Todas las características del juego se pueden cambiar en el menu de admin.\n\n"
+		"Todas las características del juego se pueden cambiar en el menú de admin.\n\n"
 		"Pulse una tecla para continuar...");
 	return;
 }

@@ -1,6 +1,6 @@
 ﻿#include "cabecera.h"
 
-void adminmenu()
+void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
 {
 	int flecha = 1, sel;
 
@@ -16,15 +16,12 @@ void adminmenu()
 		printf("  Cambiar visión\n");
 		if (flecha == 3)
 			printf("->");
-		printf("  Cambiar inicio de jugador\n");
-		if (flecha == 4)
-			printf("->");
 		printf("  Cambiar gráficos de terreno\n");
-		if (flecha == 5)
+		if (flecha == 4)
 			printf("->");
 		printf("  Cambiar nombre del jugador\n");
 		sel = flecha;
-		flecha = menuFlecha(5, flecha);
+		flecha = menuFlecha(4, flecha, *controles);
 		if (flecha == 0)
 		{
 			flecha = 1;
@@ -33,31 +30,31 @@ void adminmenu()
 			case 1:
 				system("cls");
 				printf("Introduzca tecla para UP: ");
-				controles.UP = getch();
+				controles->UP = getch();
 				printf("\nIntroduzca tecla para DOWN: ");
-				controles.DOWN = getch();
+				controles->DOWN = getch();
 				printf("\nIntroduzca tecla para LEFT: ");
-				controles.LEFT = getch();
+				controles->LEFT = getch();
 				printf("\nIntroduzca tecla para RIGHT: ");
-				controles.RIGHT = getch();
+				controles->RIGHT = getch();
 				printf("\nIntroduzca tecla para ACTION: ");
-				controles.ACTION = getch();
+				controles->ACTION = getch();
 				printf("\nIntroduzca tecla para MENU: ");
-				controles.MENU = getch();
+				controles->MENU = getch();
 				break;
 			case 2:
 				system("cls");
 				printf("Rango actual:\nX: %d\nY: %d\n\n"
-					"- Sólo se aceptan valores mayores que 0 y menores que X=6 e Y=4.\n- X DEBE ser mayor que Y.\n- Se recomienda que X sea Y + 2.\n\n", VISION.X, VISION.Y);
+					"- Sólo se aceptan valores mayores que 0 y menores que X=6 e Y=4.\n- X DEBE ser mayor que Y.\n- Se recomienda que X sea Y + 2.\n\n", VISION->X, VISION->Y);
 				do
 				{
 					printf("Introduzca el rango de visión en X: ");
-					scanf("%d", &VISION.X);
+					scanf("%d", &VISION->X);
 					fflush(stdin);
 					printf("\nIntroduzca el rango de visión en Y: ");
-					scanf("%d", &VISION.Y);
+					scanf("%d", &VISION->Y);
 					fflush(stdin);
-					if (VISION.X <= 0 || VISION.Y <= 0 || VISION.Y > VISION.X || VISION.X > 6 || VISION.Y > 4)
+					if (VISION->X <= 0 || VISION->Y <= 0 || VISION->Y > VISION->X || VISION->X > 6 || VISION->Y > 4)
 					{
 						printf("\nAlguno de los valores introducidos no es correcto.\n\n\n");
 						getch();
@@ -68,38 +65,28 @@ void adminmenu()
 				} while (1);
 			case 3:
 				system("cls");
-				printf("Posicion actual:\nX: %d\nY: %d\n\n"
-					"Introduzca la posición inicial en X: ", INITPJ.X, INITPJ.Y);
-				scanf("%d", &INITPJ.X);
+				printf("Caracteres actuales:\nLlanos: '%c'\nMuros: '%c'\nEventos: '%c'\nPuertas: '%c'\nPersonaje : '%c'\n\n"
+					"Introduzca el nuevo carácter para Llanos: ", graph->PLAINS, graph->WALL, graph->EVENT, graph->DOOR, graph->PJ);
+				scanf("%c", &graph->PLAINS);
 				fflush(stdin);
-				printf("\nIntroduzca la posición inicial en Y: ");
-				scanf("%d", &INITPJ.Y);
+				printf("Introduzca el nuevo carácter para Muros: ");
+				scanf("%c", &graph->WALL);
+				fflush(stdin);
+				printf("Introduzca el nuevo carácter para Eventos: ");
+				scanf("%c", &graph->EVENT);
+				fflush(stdin);
+				printf("Introduzca el nuevo carácter para Puertas: ");
+				scanf("%c", &graph->DOOR);
+				fflush(stdin);
+				printf("Introduzca el nuevo carácter para el personaje: ");
+				scanf("%c", &graph->PJ);
 				fflush(stdin);
 				break;
 			case 4:
 				system("cls");
-				printf("Caracteres actuales:\nLlanos: '%c'\nMuros: '%c'\nEventos: '%c'\nPuertas: '%c'\nPersonaje : '%c'\n\n"
-					"Introduzca el nuevo carácter para Llanos: ", graph.PLAINS, graph.WALL, graph.EVENT, graph.DOOR, graph.PJ);
-				scanf("%c", &graph.PLAINS);
-				fflush(stdin);
-				printf("Introduzca el nuevo carácter para Muros: ");
-				scanf("%c", &graph.WALL);
-				fflush(stdin);
-				printf("Introduzca el nuevo carácter para Eventos: ");
-				scanf("%c", &graph.EVENT);
-				fflush(stdin);
-				printf("Introduzca el nuevo carácter para Puertas: ");
-				scanf("%c", &graph.DOOR);
-				fflush(stdin);
-				printf("Introduzca el nuevo carácter para el personaje: ");
-				scanf("%c", &graph.PJ);
-				fflush(stdin);
-				break;
-			case 5:
-				system("cls");
 				printf("Nombre actual del jugador: %s\n\n"
-					"Introduzca nuevo nombre para el jugador (15 caracteres maximo): ", personaje.nombre);
-				scanf("%[^\n]s", personaje.nombre);
+					"Introduzca nuevo nombre para el jugador (15 caracteres maximo): ", personaje->nombre);
+				scanf("%[^\n]s", personaje->nombre);
 				break;
 			}
 		}
@@ -110,14 +97,14 @@ void adminmenu()
 	} while (1);
 }
 
-void pjmenu()
+void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje)
 {
-	int flecha = 1, k, i = 1, aux = 0, sel;
+	int flecha = 1, k, i = 1, aux = 0, sel, numinv = 4;
 
 	do
 	{
 		system("cls");
-		printf("\t-Menú\n");
+		printf("\t-Menú-\n");
 		if (flecha == 1)
 			printf("->");
 		printf("  Estado\n");
@@ -131,7 +118,7 @@ void pjmenu()
 			printf("->");
 		printf("  Habilidades\n");
 		sel = flecha;
-		flecha = menuFlecha(4, flecha);
+		flecha = menuFlecha(4, flecha, controles);
 		if (flecha == 0)
 		{
 			switch (sel)
@@ -148,13 +135,13 @@ void pjmenu()
 					"Puntería: %d\n"
 					"Inteligencia: %d\n\n"
 					"Daño efectivo: %d - %d\n"
-					, personaje.nombre, personaje.HPLEFT, personaje.HP, personaje.MPLEFT, personaje.MP, personaje.LVL, personaje.EXP, personaje.LVL * 150, personaje.STR, personaje.DEF, items[personaje.armorEquip].def, personaje.ACC, personaje.INT, personaje.minDmg, personaje.maxDmg);
+					, personaje->nombre, personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->LVL, personaje->EXP, personaje->LVL * 150, personaje->STR, personaje->DEF, items[personaje->armorEquip].def, personaje->ACC, personaje->INT, personaje->minDmg, personaje->maxDmg);
 				getch();
 				break;
 			case 2:
 				system("cls");
 				printf("Arma: %s (%d - %d daño)\n\n"
-					"Armadura: %s (+%d defensa)\n", items[personaje.weapEquip].nombre, items[personaje.weapEquip].minDmg, items[personaje.weapEquip].maxDmg, items[personaje.armorEquip].nombre, items[personaje.armorEquip].def);
+					"Armadura: %s (+%d defensa)\n", items[personaje->weapEquip].nombre, items[personaje->weapEquip].minDmg, items[personaje->weapEquip].maxDmg, items[personaje->armorEquip].nombre, items[personaje->armorEquip].def);
 				getch();
 				break;
 			case 3:
@@ -165,31 +152,31 @@ void pjmenu()
 					{
 						if (k == i)
 							printf("->");
-						if (k == personaje.armorEquip + 1 || k == personaje.weapEquip + 1)
+						if (k == personaje->armorEquip + 1 || k == personaje->weapEquip + 1)
 							printf("  -E-");
-						printf("  %s  %dx\n", items[personaje.inventario[k - 1][0]].nombre, personaje.inventario[k - 1][1]);
+						printf("  %s  %dx\n", items[personaje->inventario[k - 1][0]].nombre, personaje->inventario[k - 1][1]);
 					}
 					k = i;
-					i = menuFlecha(numinv, i);
+					i = menuFlecha(numinv, i, controles);
 					if (i == 0)
 					{
 						i = k;
 						system("cls");
-						printf("Nombre: %s\n", items[personaje.inventario[i - 1][0]].nombre);
-						if (items[personaje.inventario[i - 1][0]].tipo == 0)
-							printf("Daño: %d - %d\n", items[personaje.inventario[i - 1][0]].minDmg, items[personaje.inventario[i - 1][0]].maxDmg);
-						else if (items[personaje.inventario[i - 1][0]].tipo == 1)
-							printf("Defensa: %d\n", items[personaje.inventario[i - 1][0]].def);
-						printf("Cantidad : %d\n\n", personaje.inventario[i - 1][1]);
+						printf("Nombre: %s\n", items[personaje->inventario[i - 1][0]].nombre);
+						if (items[personaje->inventario[i - 1][0]].tipo == 0)
+							printf("Daño: %d - %d\n", items[personaje->inventario[i - 1][0]].minDmg, items[personaje->inventario[i - 1][0]].maxDmg);
+						else if (items[personaje->inventario[i - 1][0]].tipo == 1)
+							printf("Defensa: %d\n", items[personaje->inventario[i - 1][0]].def);
+						printf("Cantidad : %d\n\n", personaje->inventario[i - 1][1]);
 						printf("¿Equipar? (s/n)");
 						if (getch() == 's')
 						{
-							if (items[personaje.inventario[i - 1][0]].tipo == 0)
-								personaje.weapEquip = i - 1;
-							else if (items[personaje.inventario[i - 1][0]].tipo == 1)
-								personaje.armorEquip = i - 1;
-							personaje.minDmg = items[personaje.weapEquip].minDmg + (personaje.STR / 10);
-							personaje.maxDmg = items[personaje.weapEquip].maxDmg + (personaje.STR / 10);
+							if (items[personaje->inventario[i - 1][0]].tipo == 0)
+								personaje->weapEquip = i - 1;
+							else if (items[personaje->inventario[i - 1][0]].tipo == 1)
+								personaje->armorEquip = i - 1;
+							personaje->minDmg = items[personaje->weapEquip].minDmg + (personaje->STR / 10);
+							personaje->maxDmg = items[personaje->weapEquip].maxDmg + (personaje->STR / 10);
 						}
 					}
 					else if (i == -1)
@@ -207,7 +194,7 @@ void pjmenu()
 	} while (1);
 }
 
-int menuFlecha(int rangeMax, int flecha)
+int menuFlecha(int rangeMax, int flecha, STRUCTcontroles controles)
 {
 	char sel1 = 0;
 

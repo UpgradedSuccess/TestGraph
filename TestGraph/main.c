@@ -1,23 +1,24 @@
 ﻿#include "cabecera.h"
 
-STRUCTcontroles controles;
-STRUCTpos VISION, INITPJ, TAMCMD;
-STRUCTgraph graph;
-STRUCTpersonaje personaje;
 STRUCTitem *items;
-STRUCTpos tamMapa = { 0 };
 STRUCTeventos *evento;
 STRUCTlink *puertas;
 char **map;
-int auxmalloc, updatemap, numinv = 4, numevento = 0, mapactual, numlink, numitems = 0, numenemigos = 0;
 
 int main()
 {
+	int numevento = 0, mapactual, numlink;
+	STRUCTpos VISION, tamMapa = { 0 };
+	STRUCTgraph graph;
+	STRUCTcontroles controles;
+	STRUCTpersonaje personaje;
+
 	srand(time(0));
 	setlocale(LC_CTYPE, "Spanish");
 
-	inicializacion();
-	lectura();
+	inicializacion(&VISION, &graph, &controles, &personaje);
+	mapactual = 0;
+	lectura(&numevento, &mapactual, &numlink, &tamMapa);
 	instrucciones();
-	display();
+	display(numevento, &mapactual, &numlink, &VISION, &tamMapa, &graph, &controles, &personaje);
 }

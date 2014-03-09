@@ -1,30 +1,28 @@
 #include "cabecera.h"
 
-void inicializacion()
+void inicializacion(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
 {
 	FILE *FILEitems;
-	int k = 0;
-	char buffer;
+	int k = 0, numitems = 0;
+	char buffer, cmdSize[30];
 
-	controles.UP = 'w';
-	controles.DOWN = 's';
-	controles.LEFT = 'a';
-	controles.RIGHT = 'd';
-	controles.ACTION = 'e';
-	controles.BACK = 'q';
-	controles.SPECIAL = 'p';
-	controles.MENU = 'm';
-	VISION.X = 4;
-	VISION.Y = 2;
-	INITPJ.X = 3;
-	INITPJ.Y = 3;
-	TAMCMD.X = 20;
-	TAMCMD.Y = 36;
-	graph.PLAINS = '-';
-	graph.WALL = '#';
-	graph.EVENT = '!';
-	graph.DOOR = 'E';
-	graph.PJ = '*';
+	controles->UP = 'w';
+	controles->DOWN = 's';
+	controles->LEFT = 'a';
+	controles->RIGHT = 'd';
+	controles->ACTION = 'e';
+	controles->BACK = 'q';
+	controles->SPECIAL = 'p';
+	controles->MENU = 'm';
+	VISION->X = 4;
+	VISION->Y = 2;
+	sprintf(cmdSize, "mode con: cols=36 lines=20");
+	system(cmdSize);
+	graph->PLAINS = '-';
+	graph->WALL = '#';
+	graph->EVENT = '!';
+	graph->DOOR = 'E';
+	graph->PJ = '*';
 	FILEitems = fopen("data\\items.txt", "rt");
 	if (FILEitems == NULL)
 	{
@@ -63,28 +61,28 @@ void inicializacion()
 		}
 	}
 	fclose(FILEitems);
-	strcpy(personaje.nombre, "Personaje");
-	personaje.HP = 30;
-	personaje.MP = 10 + (personaje.INT / 10);
-	personaje.HPLEFT = personaje.HP;
-	personaje.MPLEFT = personaje.MP;
-	personaje.LVL = 1;
-	personaje.EXP = 0;
-	personaje.STR = 10;
-	personaje.ACC = 10;
-	personaje.DEF = 10;
-	personaje.INT = 10;
-	personaje.weapEquip = 0;
-	personaje.armorEquip = 1;
-	personaje.minDmg = items[personaje.weapEquip].minDmg + (personaje.STR / 10);
-	personaje.maxDmg = items[personaje.weapEquip].maxDmg + (personaje.STR / 10);
-	personaje.inventario[0][0] = 0;
-	personaje.inventario[1][0] = 1;
-	personaje.inventario[0][1] = 1;
-	personaje.inventario[1][1] = 1;
-	personaje.inventario[2][0] = 2;
-	personaje.inventario[3][0] = 3;
-	personaje.inventario[2][1] = 1;
-	personaje.inventario[3][1] = 1;
+	strcpy(personaje->nombre, "Personaje");
+	personaje->HP = 30;
+	personaje->INT = 10;
+	personaje->MP = 10 + (personaje->INT / 10);
+	personaje->HPLEFT = personaje->HP;
+	personaje->MPLEFT = personaje->MP;
+	personaje->LVL = 1;
+	personaje->EXP = 0;
+	personaje->STR = 10;
+	personaje->ACC = 10;
+	personaje->DEF = 10;
+	personaje->weapEquip = 0;
+	personaje->armorEquip = 1;
+	personaje->minDmg = items[personaje->weapEquip].minDmg + (personaje->STR / 10);
+	personaje->maxDmg = items[personaje->weapEquip].maxDmg + (personaje->STR / 10);
+	personaje->inventario[0][0] = 0;
+	personaje->inventario[1][0] = 1;
+	personaje->inventario[0][1] = 1;
+	personaje->inventario[1][1] = 1;
+	personaje->inventario[2][0] = 2;
+	personaje->inventario[3][0] = 3;
+	personaje->inventario[2][1] = 1;
+	personaje->inventario[3][1] = 1;
 	return;
 }

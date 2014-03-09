@@ -98,27 +98,22 @@ typedef struct
 	int tipo;
 }STRUCTitem;
 
-extern STRUCTcontroles controles;
-extern STRUCTpos VISION, INITPJ, tamMapa, pj, TAMCMD;
-extern STRUCTgraph graph;
 extern STRUCTeventos *evento;
 extern STRUCTlink *puertas;
-extern STRUCTpersonaje personaje;
 extern STRUCTitem *items;
-extern int numevento, mapactual, numlink, updatemap, auxmalloc, numitems, numinv, numenemigos;
 extern char **map;
 
-void movimiento();
-void lectura();
-void display();
+void movimiento(int, int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
+void lectura(int*, int*, int*, STRUCTpos*);
+void display(int, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
 void error(int);
-void inicializacion();
+void inicializacion(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
 void instrucciones();
-void adminmenu();
-int busquedaEvento();
-void busquedaPuerta();
+void adminmenu(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
+int busquedaEvento(int, STRUCTpos);
+void busquedaPuerta(int*, int*, int*, int*, STRUCTpos*, STRUCTpos*);
 int colisiones(char);
-void pjmenu();
-void batalla();
-int menuFlecha(int, int);
+void pjmenu(STRUCTcontroles, STRUCTpersonaje*);
+void batalla(STRUCTcontroles, STRUCTpersonaje*);
+int menuFlecha(int, int, STRUCTcontroles);
 void defeat();

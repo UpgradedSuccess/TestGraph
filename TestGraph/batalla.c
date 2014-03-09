@@ -1,8 +1,8 @@
 ﻿#include "cabecera.h"
 
-void batalla()
+void batalla(STRUCTcontroles controles, STRUCTpersonaje *personaje)
 {
-	int k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt;
+	int k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
 	char mov, mapaBatalla[5][11];
 	FILE *FILEmapaBatalla, *FILEenemigos;
 	STRUCTpos pjBatalla;
@@ -98,7 +98,7 @@ void batalla()
 	}
 	do
 	{
-		if (personaje.HPLEFT <= 0)
+		if (personaje->HPLEFT <= 0)
 			defeat();
 		system("cls");
 		if (update == 1)
@@ -128,9 +128,9 @@ void batalla()
 				printf("->");
 			printf("  Huir\n");
 			printf("\n\nHP: %d / %d\n"
-				"MP: %d % d\n", personaje.HPLEFT, personaje.HP, personaje.MPLEFT, personaje.MP);
+				"MP: %d % d\n", personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP);
 			sel = flecha;
-			flecha = menuFlecha(4, flecha);
+			flecha = menuFlecha(4, flecha, controles);
 			if (flecha == 0)
 			{
 				flecha = 1;
@@ -241,12 +241,12 @@ void batalla()
 							printf("  %s  HP:%d\n", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[printEnemy[l - 1]].HP);
 						}
 						l = m;
-						m = menuFlecha(numprintEnemy, m);
+						m = menuFlecha(numprintEnemy, m, controles);
 						if (m == 0)
 						{
 							turno++;
-							RANDMIN = personaje.minDmg;
-							RANDMAX = personaje.maxDmg - personaje.minDmg;
+							RANDMIN = personaje->minDmg;
+							RANDMAX = personaje->maxDmg - personaje->minDmg;
 							dmgdealt = rand() % RANDMAX + RANDMIN;
 							enemigosSPAWN[printEnemy[l - 1]].HP = enemigosSPAWN[printEnemy[l - 1]].HP - dmgdealt;
 							printf("\nHas hecho %d de daño a %s!", dmgdealt, enemigosSPAWN[printEnemy[l - 1]].nombre);
@@ -255,17 +255,17 @@ void batalla()
 								printf("\n%s ha muerto!\n\t|\n\tv", enemigosSPAWN[printEnemy[l - 1]].nombre);
 								getch();
 								numSpawn--;
-								personaje.EXP = personaje.EXP + enemigosSPAWN[l - 1].EXP;
+								personaje->EXP = personaje->EXP + enemigosSPAWN[l - 1].EXP;
 								mapaBatalla[enemigosSPAWN[printEnemy[l - 1]].pos.Y][enemigosSPAWN[printEnemy[l - 1]].pos.X] = '-';
 								if (numSpawn == 0)
 								{
-									if (personaje.EXP >= personaje.LVL * 150)
+									if (personaje->EXP >= personaje->LVL * 150)
 									{
-										personaje.EXP = personaje.EXP - personaje.LVL * 150;
-										personaje.LVL++;
-										personaje.STR = personaje.STR + personaje.LVL;
-										personaje.HP = personaje.HP + personaje.LVL * 2;
-										personaje.HPLEFT = personaje.HP;
+										personaje->EXP = personaje->EXP - personaje->LVL * 150;
+										personaje->LVL++;
+										personaje->STR = personaje->STR + personaje->LVL;
+										personaje->HP = personaje->HP + personaje->LVL * 2;
+										personaje->HPLEFT = personaje->HP;
 										system("cls");
 										printf("Has ganado 1 nivel!");
 										getch();
@@ -309,7 +309,7 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
+				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
@@ -322,7 +322,7 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
+				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
@@ -335,7 +335,7 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
+				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
@@ -348,7 +348,7 @@ void batalla()
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje.HPLEFT = personaje.HPLEFT - dmgdealt;
+				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
 				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
