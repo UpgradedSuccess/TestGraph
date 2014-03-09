@@ -84,10 +84,14 @@ void movimiento()
 		return;
 	}
 	else if (mov == controles.MENU)
+	{
+		updatemap = 0;
 		pjmenu();
+	}
 	else if (mov == controles.SPECIAL)
 	{
 		auxmalloc = 1;
+		updatemap = 0;
 		adminmenu();
 	}
 }
