@@ -57,10 +57,14 @@ void batalla()
 	l = 0;
 	for (k = 0; k < numenemigos; k++)
 	{
-		if (numSpawn >= 4)
-			break;
 		enemigos[k].num = rand() % 3 + 1;
 		numSpawn = numSpawn + enemigos[k].num;
+		if (numSpawn > 4)
+		{
+			m = numSpawn - 4;
+			enemigos[k].num = enemigos[k].num - m;
+			numSpawn = 4;
+		}
 		enemigosSPAWN = (STRUCTenemigosSPAWN*)realloc(enemigosSPAWN, numSpawn * sizeof(STRUCTenemigosSPAWN));
 		for (i = 0; i < enemigos[k].num; i++)
 		{
