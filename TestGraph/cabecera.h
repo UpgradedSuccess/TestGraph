@@ -8,6 +8,23 @@
 
 typedef struct
 {
+	int X;
+	int Y;
+} STRUCTpos;
+
+typedef struct
+{
+	char nombre[15];
+	int minDmg;
+	int maxDmg;
+	int def;
+	int tipo;
+	int isRanged;
+	int num;
+}STRUCTitem;
+
+typedef struct
+{
 	char nombre[15];
 	int HP;
 	int HPLEFT;
@@ -24,13 +41,10 @@ typedef struct
 	int invent;
 	int minDmg;
 	int maxDmg;
-	int inventario[4][2];
+	STRUCTitem *inventario;
+	STRUCTpos pos;
 } STRUCTpersonaje;
-typedef struct
-{
-	int X;
-	int Y;
-} STRUCTpos;
+
 typedef struct
 {
 	char nombre[15];
@@ -42,6 +56,8 @@ typedef struct
 	int maxEXP;
 	int num;
 	char graph;
+	char drop[15];
+	int dropChance;
 } STRUCTenemigos;
 typedef struct
 {
@@ -51,6 +67,8 @@ typedef struct
 	int maxDmg;
 	int EXP;
 	char graph;
+	int drop;
+	int dropChance;
 	STRUCTpos pos;
 } STRUCTenemigosSPAWN;
 typedef struct
@@ -89,26 +107,18 @@ typedef struct
 	int numTexto;
 } STRUCTeventos;
 
-typedef struct
-{
-	char nombre[15];
-	int minDmg;
-	int maxDmg;
-	int def;
-	int tipo;
-}STRUCTitem;
-
-void movimiento(int, int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
+void movimiento(int, int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
 void lectura(int*, int*, int*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
-void display(int, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
+void display(int, int, int*, int*, STRUCTpos*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, char***, STRUCTeventos**, STRUCTitem*, STRUCTlink**);
 void error(int);
-void inicializacion(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, STRUCTitem**);
+void inicializacion(int*, STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*, STRUCTitem**, int*);
 void instrucciones();
 void adminmenu(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
-int busquedaEvento(int, STRUCTpos, STRUCTeventos**);
-void busquedaPuerta(int*, int*, int*, int*, STRUCTpos*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
+int busquedaEvento(int, STRUCTpersonaje, STRUCTeventos**);
+void busquedaPuerta(int*, int*, int*, int*, STRUCTpersonaje*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
 int colisiones(char);
-void pjmenu(STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*);
-void batalla(STRUCTcontroles, STRUCTpersonaje*);
+void pjmenu(STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*, int);
+void batalla(int, STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*);
 int menuFlecha(int, int, STRUCTcontroles);
 void defeat();
+void savegame(STRUCTpersonaje, int);
