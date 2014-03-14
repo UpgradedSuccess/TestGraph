@@ -97,9 +97,9 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 	} while (1);
 }
 
-void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
+void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, int mapactual)
 {
-	int flecha = 1, k, i = 1, aux = 0, sel, numinv = 4;
+	int flecha = 1, k, i = 1, aux = 0, sel;
 
 	do
 	{
@@ -117,8 +117,11 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 		if (flecha == 4)
 			printf("->");
 		printf("  Habilidades\n");
+		if (flecha == 5)
+			printf("->");
+		printf("  Guardar partida\n");
 		sel = flecha;
-		flecha = menuFlecha(4, flecha, controles);
+		flecha = menuFlecha(5, flecha, controles);
 		if (flecha == 0)
 		{
 			switch (sel)
@@ -135,54 +138,62 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 					"Puntería: %d\n"
 					"Inteligencia: %d\n\n"
 					"Daño efectivo: %d - %d\n"
-					, personaje->nombre, personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->LVL, personaje->EXP, personaje->LVL * 150, personaje->STR, personaje->DEF, items[personaje->armorEquip].def, personaje->ACC, personaje->INT, personaje->minDmg, personaje->maxDmg);
+					, personaje->nombre, personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->LVL, personaje->EXP, personaje->LVL * 100, personaje->STR, personaje->DEF, personaje->inventario[personaje->armorEquip].def, personaje->ACC, personaje->INT, personaje->minDmg, personaje->maxDmg);
 				getch();
 				break;
 			case 2:
 				system("cls");
 				printf("Arma: %s (%d - %d daño)\n\n"
-					"Armadura: %s (+%d defensa)\n", items[personaje->weapEquip].nombre, items[personaje->weapEquip].minDmg, items[personaje->weapEquip].maxDmg, items[personaje->armorEquip].nombre, items[personaje->armorEquip].def);
+					"Armadura: %s (+%d defensa)\n", personaje->inventario[personaje->weapEquip].nombre, personaje->inventario[personaje->weapEquip].minDmg, personaje->inventario[personaje->weapEquip].maxDmg, personaje->inventario[personaje->armorEquip].nombre, personaje->inventario[personaje->armorEquip].def);
 				getch();
 				break;
 			case 3:
 				do
 				{
 					system("cls");
-					for (k = 1; k < numinv + 1; k++)
+					for (k = 1; k < personaje->invent + 1; k++)
 					{
 						if (k == i)
 							printf("->");
 						if (k == personaje->armorEquip + 1 || k == personaje->weapEquip + 1)
 							printf("  -E-");
-						printf("  %s  %dx\n", items[personaje->inventario[k - 1][0]].nombre, personaje->inventario[k - 1][1]);
+						printf("  %s  %dx\n", personaje->inventario[k - 1].nombre, personaje->inventario[k - 1].num);
 					}
 					k = i;
-					i = menuFlecha(numinv, i, controles);
+					i = menuFlecha(personaje->invent, i, controles);
 					if (i == 0)
 					{
 						i = k;
 						system("cls");
-						printf("Nombre: %s\n", items[personaje->inventario[i - 1][0]].nombre);
-						if (items[personaje->inventario[i - 1][0]].tipo == 0)
-							printf("Daño: %d - %d\n", items[personaje->inventario[i - 1][0]].minDmg, items[personaje->inventario[i - 1][0]].maxDmg);
-						else if (items[personaje->inventario[i - 1][0]].tipo == 1)
-							printf("Defensa: %d\n", items[personaje->inventario[i - 1][0]].def);
-						printf("Cantidad : %d\n\n", personaje->inventario[i - 1][1]);
+						printf("Nombre: %s\n", personaje->inventario[i - 1].nombre);
+						if (personaje->inventario[i - 1].tipo == 0)
+							printf("Daño: %d - %d\n", personaje->inventario[i - 1].minDmg, personaje->inventario[i - 1].maxDmg);
+						else if (personaje->inventario[i - 1].tipo == 1)
+							printf("Defensa: %d\n", personaje->inventario[i - 1].def);
+						printf("Cantidad : %d\n\n", personaje->inventario[i - 1].num);
 						printf("¿Equipar? (s/n)");
 						if (getch() == 's')
 						{
-							if (items[personaje->inventario[i - 1][0]].tipo == 0)
+							if (personaje->inventario[i - 1].tipo == 0)
 								personaje->weapEquip = i - 1;
-							else if (items[personaje->inventario[i - 1][0]].tipo == 1)
+							else if (personaje->inventario[i - 1].tipo == 1)
 								personaje->armorEquip = i - 1;
-							personaje->minDmg = items[personaje->weapEquip].minDmg + (personaje->STR / 10);
-							personaje->maxDmg = items[personaje->weapEquip].maxDmg + (personaje->STR / 10);
+							personaje->minDmg = personaje->inventario[personaje->weapEquip].minDmg + (personaje->STR / 10);
+							personaje->maxDmg = personaje->inventario[personaje->weapEquip].maxDmg + (personaje->STR / 10);
 						}
 					}
 					else if (i == -1)
 						break;
+					else if (i == -2)
+					{
+						i = k;
+						continue;
+					}
 				} while (1);
 				i = 1;
+				break;
+			case 5:
+				savegame(*personaje, mapactual);
 				break;
 			default:
 				break;
@@ -191,6 +202,11 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 		}
 		else if (flecha == -1)
 			return;
+		else if (flecha == -2)
+		{
+			flecha = sel;
+			continue;
+		}
 	} while (1);
 }
 

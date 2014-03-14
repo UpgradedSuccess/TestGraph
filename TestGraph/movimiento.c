@@ -1,6 +1,6 @@
 #include "cabecera.h"
 
-void movimiento(int numevento, int *mapactual, int *numlink, int *updatemap, int *auxmalloc, STRUCTpos *VISION, STRUCTpos *pj, STRUCTpos *tamMapa, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, char ***map, STRUCTeventos **evento, STRUCTitem *items, STRUCTlink **puertas)
+void movimiento(int numevento, int *mapactual, int *numlink, int *updatemap, int *auxmalloc, STRUCTpos *VISION, STRUCTpos *tamMapa, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, char ***map, STRUCTeventos **evento, STRUCTitem *items, STRUCTlink **puertas)
 {
 	int k, i, j;
 	char mov;
@@ -9,67 +9,67 @@ void movimiento(int numevento, int *mapactual, int *numlink, int *updatemap, int
 	if (mov == controles->UP)
 	{
 		(*auxmalloc) = 0;
-		(*updatemap) = colisiones((*map)[pj->Y - 1][pj->X]);
+		(*updatemap) = colisiones((*map)[personaje->pos.Y - 1][personaje->pos.X]);
 		if ((*updatemap) == 1)
-			pj->Y--;
+			personaje->pos.Y--;
 		else if ((*updatemap) == 2)
 		{
-			pj->Y--;
+			personaje->pos.Y--;
 			(*auxmalloc) = 1;
-			busquedaPuerta(&numevento, mapactual, numlink, updatemap, pj, tamMapa, map, evento, puertas);
+			busquedaPuerta(&numevento, mapactual, numlink, updatemap, personaje, tamMapa, map, evento, puertas);
 		}
 	}
 	else if (mov == controles->LEFT)
 	{
 		(*auxmalloc) = 0;
-		(*updatemap) = colisiones((*map)[pj->Y][pj->X - 1]);
+		(*updatemap) = colisiones((*map)[personaje->pos.Y][personaje->pos.X - 1]);
 		if ((*updatemap) == 1)
-			pj->X--;
+			personaje->pos.X--;
 		else if ((*updatemap) == 2)
 		{
-			pj->X--;
+			personaje->pos.X--;
 			(*auxmalloc) = 1;
-			busquedaPuerta(&numevento, mapactual, numlink, updatemap, pj, tamMapa, map, evento, puertas);
+			busquedaPuerta(&numevento, mapactual, numlink, updatemap, personaje, tamMapa, map, evento, puertas);
 		}
 	}
 	else if (mov == controles->DOWN)
 	{
 		(*auxmalloc) = 0;
-		(*updatemap) = colisiones((*map)[pj->Y + 1][pj->X]);
+		(*updatemap) = colisiones((*map)[personaje->pos.Y + 1][personaje->pos.X]);
 		if ((*updatemap) == 1)
-			pj->Y++;
+			personaje->pos.Y++;
 		else if ((*updatemap) == 2)
 		{
-			pj->Y++;
+			personaje->pos.Y++;
 			(*auxmalloc) = 1;
-			busquedaPuerta(&numevento, mapactual, numlink, updatemap, pj, tamMapa, map, evento, puertas);
+			busquedaPuerta(&numevento, mapactual, numlink, updatemap, personaje, tamMapa, map, evento, puertas);
 		}
 	}
 	else if (mov == controles->RIGHT)
 	{
 		(*auxmalloc) = 0;
-		(*updatemap) = colisiones((*map)[pj->Y][pj->X + 1]);
+		(*updatemap) = colisiones((*map)[personaje->pos.Y][personaje->pos.X + 1]);
 		if ((*updatemap) == 1)
-			pj->X++;
+			personaje->pos.X++;
 		else if ((*updatemap) == 2)
 		{
-			pj->X++;
+			personaje->pos.X++;
 			(*auxmalloc) = 1;
-			busquedaPuerta(&numevento, mapactual, numlink, updatemap, pj, tamMapa, map, evento, puertas);
+			busquedaPuerta(&numevento, mapactual, numlink, updatemap, personaje, tamMapa, map, evento, puertas);
 		}
 	}
 	else if (mov == controles->ACTION)
 	{
 		(*auxmalloc) = 0;
-		if ((*map)[pj->Y][pj->X] == '-')
+		if ((*map)[personaje->pos.Y][personaje->pos.X] == '-')
 		{
 			(*updatemap) = 0;
 			return;
 		}
-		else if ((*map)[pj->Y][pj->X] == '!')
+		else if ((*map)[personaje->pos.Y][personaje->pos.X] == '!')
 		{
 			(*updatemap) = 1;
-			k = busquedaEvento(numevento, *pj, evento);
+			k = busquedaEvento(numevento, *personaje, evento);
 			printf("\n\n\n");
 			printf("%s: \n", (*evento)[k].nombre);
 			printf("-");
@@ -88,7 +88,7 @@ void movimiento(int numevento, int *mapactual, int *numlink, int *updatemap, int
 		return;
 	}
 	else if (mov == controles->MENU)
-		pjmenu(*controles, personaje, items);
+		pjmenu(*controles, personaje, items, *mapactual);
 	else if (mov == controles->SPECIAL)
 	{
 		(*auxmalloc) = 1;

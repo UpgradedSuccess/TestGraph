@@ -2,7 +2,7 @@
 
 int main()
 {
-	int numevento = 0, mapactual, numlink;
+	int numevento = 0, mapactual, numlink, numitems = 0;
 	char **map;
 	STRUCTpos VISION, tamMapa = { 0 };
 	STRUCTgraph graph;
@@ -15,9 +15,9 @@ int main()
 	srand(time(0));
 	setlocale(LC_CTYPE, "Spanish");
 
-	inicializacion(&VISION, &graph, &controles, &personaje, &items);
 	mapactual = 0;
+	inicializacion(&numitems, &VISION, &graph, &controles, &personaje, &items, &mapactual);
 	lectura(&numevento, &mapactual, &numlink, &tamMapa, &map, &evento, &puertas);
 	instrucciones();
-	display(numevento, &mapactual, &numlink, &VISION, &tamMapa, &graph, &controles, &personaje, &map, &evento, items, &puertas);
+	display(numitems, numevento, &mapactual, &numlink, &VISION, &tamMapa, &graph, &controles, &personaje, &map, &evento, items, &puertas);
 }

@@ -1,11 +1,13 @@
 #include "cabecera.h"
 
-int busquedaEvento(int numevento, STRUCTpos pj, STRUCTeventos **evento)
+int busquedaEvento(int numevento, STRUCTpersonaje personaje, STRUCTeventos **evento)
 {
 	int k;
 
 	for (k = 0; k < numevento; k++)
-	if (pj.Y == (*evento)[k].posEvento.Y && pj.X == (*evento)[k].posEvento.X)
-		return k;
+	{
+		if (personaje.pos.Y == (*evento)[k].posEvento.Y && personaje.pos.X == (*evento)[k].posEvento.X)
+			return k;
+	}
 	return -1;
 }
