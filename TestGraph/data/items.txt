@@ -1,8 +1,20 @@
 +Espada
 1 3
--Armadura
-3
-+Mandoble
-4 5
+0
+-Peto de cuero
+1
++Daga
+1 2
+1
 -Trapos
 1
++Arco
+1 2
+1
++Mandoble
+4 5
+0
+-Cota de malla
+2
+
+
