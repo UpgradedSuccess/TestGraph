@@ -1,7 +1,7 @@
 ﻿#include "cabecera.h"
 #include <stdlib.h>
 
-void error(int err)
+void error(short err)
 {
 	switch (err)
 		case 1:
@@ -32,6 +32,6 @@ void instrucciones()
 void defeat()
 {
 	system("cls");
-	printf("\t\tHas muerto.\n");
+	printf("\t\tHas muerto\n\n");
 	exit(0);
 }

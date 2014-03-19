@@ -2,7 +2,7 @@
 
 void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
 {
-	int flecha = 1, sel;
+	short flecha = 1, sel;
 
 	do
 	{
@@ -44,15 +44,15 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 				break;
 			case 2:
 				system("cls");
-				printf("Rango actual:\nX: %d\nY: %d\n\n"
+				printf("Rango actual:\nX: %hd\nY: %hd\n\n"
 					"- Sólo se aceptan valores mayores que 0 y menores que X=6 e Y=4.\n- X DEBE ser mayor que Y.\n- Se recomienda que X sea Y + 2.\n\n", VISION->X, VISION->Y);
 				do
 				{
 					printf("Introduzca el rango de visión en X: ");
-					scanf("%d", &VISION->X);
+					scanf("%hd", &VISION->X);
 					fflush(stdin);
 					printf("\nIntroduzca el rango de visión en Y: ");
-					scanf("%d", &VISION->Y);
+					scanf("%hd", &VISION->Y);
 					fflush(stdin);
 					if (VISION->X <= 0 || VISION->Y <= 0 || VISION->Y > VISION->X || VISION->X > 6 || VISION->Y > 4)
 					{
@@ -97,9 +97,9 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 	} while (1);
 }
 
-void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, int mapactual)
+void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, short mapactual)
 {
-	int flecha = 1, k, i = 1, aux = 0, sel;
+	short flecha = 1, k, i = 1, aux = 0, sel;
 
 	do
 	{
@@ -129,22 +129,22 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 			case 1:
 				system("cls");
 				printf("Nombre: %s\n\n"
-					"HP: %d / %d\n"
-					"MP: %d / %d\n"
-					"Nivel: %d\n"
-					"Experiencia: %d / %d\n\n"
-					"Fuerza: %d\n"
-					"Defensa: %d + %d\n"
-					"Puntería: %d\n"
-					"Inteligencia: %d\n\n"
-					"Daño efectivo: %d - %d\n"
+					"HP: %hd / %hd\n"
+					"MP: %hd / %hd\n"
+					"Nivel: %hd\n"
+					"Experiencia: %hd / %hd\n\n"
+					"Fuerza: %hd\n"
+					"Defensa: %hd + %hd\n"
+					"Puntería: %hd\n"
+					"Inteligencia: %hd\n\n"
+					"Daño efectivo: %hd - %hd\n"
 					, personaje->nombre, personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->LVL, personaje->EXP, personaje->LVL * 100, personaje->STR, personaje->DEF, personaje->inventario[personaje->armorEquip].def, personaje->ACC, personaje->INT, personaje->minDmg, personaje->maxDmg);
 				getch();
 				break;
 			case 2:
 				system("cls");
-				printf("Arma: %s (%d - %d daño)\n\n"
-					"Armadura: %s (+%d defensa)\n", personaje->inventario[personaje->weapEquip].nombre, personaje->inventario[personaje->weapEquip].minDmg, personaje->inventario[personaje->weapEquip].maxDmg, personaje->inventario[personaje->armorEquip].nombre, personaje->inventario[personaje->armorEquip].def);
+				printf("Arma: %s (%hd - %hd daño)\n\n"
+					"Armadura: %s (+%hd defensa)\n", personaje->inventario[personaje->weapEquip].nombre, personaje->inventario[personaje->weapEquip].minDmg, personaje->inventario[personaje->weapEquip].maxDmg, personaje->inventario[personaje->armorEquip].nombre, personaje->inventario[personaje->armorEquip].def);
 				getch();
 				break;
 			case 3:
@@ -157,7 +157,7 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 							printf("->");
 						if (k == personaje->armorEquip + 1 || k == personaje->weapEquip + 1)
 							printf("  -E-");
-						printf("  %s  %dx\n", personaje->inventario[k - 1].nombre, personaje->inventario[k - 1].num);
+						printf("  %s  %hdx\n", personaje->inventario[k - 1].nombre, personaje->inventario[k - 1].num);
 					}
 					k = i;
 					i = menuFlecha(personaje->invent, i, controles);
@@ -167,10 +167,10 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 						system("cls");
 						printf("Nombre: %s\n", personaje->inventario[i - 1].nombre);
 						if (personaje->inventario[i - 1].tipo == 0)
-							printf("Daño: %d - %d\n", personaje->inventario[i - 1].minDmg, personaje->inventario[i - 1].maxDmg);
+							printf("Daño: %hd - %hd\n", personaje->inventario[i - 1].minDmg, personaje->inventario[i - 1].maxDmg);
 						else if (personaje->inventario[i - 1].tipo == 1)
-							printf("Defensa: %d\n", personaje->inventario[i - 1].def);
-						printf("Cantidad : %d\n\n", personaje->inventario[i - 1].num);
+							printf("Defensa: %hd\n", personaje->inventario[i - 1].def);
+						printf("Cantidad : %hd\n\n", personaje->inventario[i - 1].num);
 						printf("¿Equipar? (s/n)");
 						if (getch() == 's')
 						{
@@ -193,7 +193,7 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 				i = 1;
 				break;
 			case 5:
-				savegame(*personaje, mapactual);
+				savegame(controles, *personaje, mapactual);
 				break;
 			default:
 				break;
@@ -210,13 +210,13 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 	} while (1);
 }
 
-int menuFlecha(int rangeMax, int flecha, STRUCTcontroles controles)
+short menuFlecha(short rangeMax, short flecha, STRUCTcontroles controles)
 {
-	char sel1 = 0;
+	char sel = 0;
 
 	fflush(stdin);
-	sel1 = getch();
-	if (sel1 == controles.UP)
+	sel = getch();
+	if (sel == controles.UP)
 	{
 		if (flecha == 1)
 		{
@@ -225,7 +225,7 @@ int menuFlecha(int rangeMax, int flecha, STRUCTcontroles controles)
 		}
 		flecha--;
 	}
-	else if (sel1 == controles.DOWN)
+	else if (sel == controles.DOWN)
 	{
 		if (flecha == rangeMax)
 		{
@@ -234,9 +234,9 @@ int menuFlecha(int rangeMax, int flecha, STRUCTcontroles controles)
 		}
 		flecha++;
 	}
-	else if (sel1 == controles.ACTION)
+	else if (sel == controles.ACTION)
 		return 0;
-	else if (sel1 == controles.BACK)
+	else if (sel == controles.BACK)
 		return -1;
 	else
 		return -2;

@@ -1,16 +1,16 @@
 ﻿#include "cabecera.h"
 
-void lectura(int *numevento, int *mapactual, int *numlink, STRUCTpos *tamMapa, char ***map, STRUCTeventos **evento, STRUCTlink **puertas)
+void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamMapa, char ***map, STRUCTeventos **evento, STRUCTlink **puertas)
 {
-	int k, auxnumTexto = 0;
+	short k, auxnumTexto = 0;
 	char nombre[20], buffer;
 	FILE *FILEmapa, *FILEeventos, *FILElinks;
 
-	sprintf(nombre, "data\\mapa%d.txt", (*mapactual) + 1);
+	sprintf(nombre, "data\\mapa%hd.txt", (*mapactual) + 1);
 	FILEmapa = fopen(nombre, "rt");
 	if (FILEmapa == NULL)
 	{
-		printf("Error al abrir el archivo 'mapa%d.txt'\n", (*mapactual) + 1);
+		printf("Error al abrir el archivo 'mapa%hd.txt'\n", (*mapactual) + 1);
 		exit(0);
 	}
 	while (feof(FILEmapa) == 0)
@@ -43,11 +43,11 @@ void lectura(int *numevento, int *mapactual, int *numlink, STRUCTpos *tamMapa, c
 	}
 	fclose(FILEmapa);
 	//##Lectura de eventos##//
-	sprintf(nombre, "data\\events%d.txt", (*mapactual) + 1);
+	sprintf(nombre, "data\\events%hd.txt", (*mapactual) + 1);
 	FILEeventos = fopen(nombre, "rt");
 	if (FILEeventos == NULL)
 	{
-		printf("Error al abrir el archivo 'events%d.txt'\n", (*mapactual) + 1);
+		printf("Error al abrir el archivo 'events%hd.txt'\n", (*mapactual) + 1);
 		exit(0);
 	}
 	(*evento) = (STRUCTeventos*)malloc(1 * sizeof(STRUCTeventos));
@@ -77,7 +77,7 @@ void lectura(int *numevento, int *mapactual, int *numlink, STRUCTpos *tamMapa, c
 	{
 		if (fgetc(FILEeventos) == '-')
 		{
-			fscanf(FILEeventos, "%d %d\n", &(*evento)[(*numevento)].posEvento.Y, &(*evento)[(*numevento)].posEvento.X);
+			fscanf(FILEeventos, "%hd %hd\n", &(*evento)[(*numevento)].posEvento.Y, &(*evento)[(*numevento)].posEvento.X);
 			(*map)[(*evento)[(*numevento)].posEvento.Y][(*evento)[(*numevento)].posEvento.X] = '!';
 			fscanf(FILEeventos, "%[^\n]s", (*evento)[(*numevento)].nombre);
 			fgetc(FILEeventos);
@@ -98,7 +98,7 @@ void lectura(int *numevento, int *mapactual, int *numlink, STRUCTpos *tamMapa, c
 	if (FILElinks == NULL)
 	{
 		printf("Error al abrir archivo de links.\n"
-			"Se continuara, pero no habra puertas");
+			"Se continuará, pero no habrá puertas");
 		getch();
 		return;
 	}
@@ -113,8 +113,8 @@ void lectura(int *numevento, int *mapactual, int *numlink, STRUCTpos *tamMapa, c
 	k = 0;
 	while (feof(FILElinks) == 0) //Lectura de links
 	{
-		fscanf(FILElinks, "%d %d %d\n", &(*puertas)[k].map[0], &(*puertas)[k].Y[0], &(*puertas)[k].X[0]);
-		fscanf(FILElinks, "%d %d %d\n", &(*puertas)[k].map[1], &(*puertas)[k].Y[1], &(*puertas)[k].X[1]);
+		fscanf(FILElinks, "%hd %hd %hd\n", &(*puertas)[k].map[0], &(*puertas)[k].Y[0], &(*puertas)[k].X[0]);
+		fscanf(FILElinks, "%hd %hd %hd\n", &(*puertas)[k].map[1], &(*puertas)[k].Y[1], &(*puertas)[k].X[1]);
 
 		if ((*mapactual) == (*puertas)[k].map[0])
 		{

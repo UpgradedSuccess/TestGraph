@@ -1,77 +1,64 @@
 ﻿#include "cabecera.h"
-
-void display(int numitems, int numevento, int *mapactual, int *numlink, STRUCTpos *VISION, STRUCTpos *tamMapa, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, char ***map, STRUCTeventos **evento, STRUCTitem *items, STRUCTlink **puertas)
+void display(STRUCTeventos *evento, STRUCTpos VISION, STRUCTpos tamMapa, STRUCTgraph graph, STRUCTpersonaje *personaje, char **map, bool updatemap, short numevento, short mapactual)
 {
-	int k, i, updatemap = 1, bat, auxmalloc;
+	short k, i;
 	char **auxmap = 0, descripcion[10];
 	STRUCTpos aux;
 
-	getch();
 	system("cls");
-	auxmalloc = 1;
-	do
+	if (updatemap == true)
 	{
-		if (updatemap == 1)
+		auxmap = (char**)malloc((VISION.X + 2) * (VISION.Y + 1) * 4);
+		for (k = 0; k < tamMapa.X; k++)
+			auxmap[k] = (char*)malloc(VISION.X * 2 * sizeof(char));
+		aux.Y = 0;
+		aux.X = 0;
+		//##Bucle usado para guardar una parte del mapa (definida por VISION.X y VISION.Y) en un mapa auxiliar para poder mostrarlo correctamente.
+		for (i = (personaje->pos.Y - VISION.Y); i < personaje->pos.Y + (VISION.Y + 1); i++)
 		{
-			bat = rand() % 25;
-			if (bat == 0)
-				batalla(numitems, *controles, personaje, items);
-			system("cls");
-			if (auxmalloc != 0)
+			for (k = (personaje->pos.X - VISION.X); k < personaje->pos.X + (VISION.X + 2); k++)
 			{
-				auxmap = (char**)malloc((VISION->X + 2) * (VISION->Y + 1) * 4);
-				for (k = 0; k < tamMapa->X; k++)
-					auxmap[k] = (char*)malloc(VISION->X * 2 * sizeof(char));
-			}
-			aux.Y = 0;
-			aux.X = 0;
-			//##Bucle usado para guardar una parte del mapa (definida por VISION->X y VISION->Y) en un mapa auxiliar para poder mostrarlo correctamente.
-			for (i = (personaje->pos.Y - VISION->Y); i < personaje->pos.Y + (VISION->Y + 1); i++)
-			{
-				for (k = (personaje->pos.X - VISION->X); k < personaje->pos.X + (VISION->X + 2); k++)
+				if (k == personaje->pos.X && i == personaje->pos.Y) //Posición del personaje
 				{
-					if (k == personaje->pos.X && i == personaje->pos.Y) //Posición del personaje
-					{
-						auxmap[aux.Y][aux.X] = graph->PJ;
-						aux.X++;
-						continue;
-					}
-					else if (k >= (personaje->pos.X + (VISION->X + 1))) //Frontera del mapa
-						auxmap[aux.Y][aux.X] = '\0';
-					else
-					{
-						if (k >= tamMapa->X - 1 || i > tamMapa->Y || i < 0 || k < 0) //Exterior del mapa
-							continue;
-						else //Resto del mapa
-						{
-							if ((*map)[i][k] == '-')
-								auxmap[aux.Y][aux.X] = graph->PLAINS;
-							else if ((*map)[i][k] == '#')
-								auxmap[aux.Y][aux.X] = graph->WALL;
-							else if ((*map)[i][k] == '!')
-								auxmap[aux.Y][aux.X] = graph->EVENT;
-							else if ((*map)[i][k] == 'E')
-								auxmap[aux.Y][aux.X] = graph->DOOR;
-						}
-					}
+					auxmap[aux.Y][aux.X] = graph.PJ;
 					aux.X++;
+					continue;
 				}
-				aux.X = 0;
-				aux.Y++;
+				else if (k >= (personaje->pos.X + (VISION.X + 1))) //Frontera del mapa
+					auxmap[aux.Y][aux.X] = '\0';
+				else
+				{
+					if (k >= tamMapa.X - 1 || i > tamMapa.Y || i < 0 || k < 0) //Exterior del mapa
+						continue;
+					else //Resto del mapa
+					{
+						if (map[i][k] == '-')
+							auxmap[aux.Y][aux.X] = graph.PLAINS;
+						else if (map[i][k] == '#')
+							auxmap[aux.Y][aux.X] = graph.WALL;
+						else if (map[i][k] == '!')
+							auxmap[aux.Y][aux.X] = graph.EVENT;
+						else if (map[i][k] == 'E')
+							auxmap[aux.Y][aux.X] = graph.DOOR;
+					}
+				}
+				aux.X++;
 			}
-			for (k = 0; k < VISION->X + 1; k++)
-				puts(auxmap[k]);
-			if ((*map)[personaje->pos.Y][personaje->pos.X] == graph->PLAINS)
-				strcpy(descripcion, "Llanos");
-			else if ((*map)[personaje->pos.Y][personaje->pos.X] == graph->DOOR)
-				strcpy(descripcion, "Puerta");
-			else if ((*map)[personaje->pos.Y][personaje->pos.X] == graph->EVENT)
-			{
-				k = busquedaEvento(numevento, *personaje, evento);
-				strcpy(descripcion, (*evento)[k].nombre);
-			}
-			printf("\nMapa: %d\n%s", (*mapactual) + 1, descripcion);
+			aux.X = 0;
+			aux.Y++;
 		}
-		movimiento(numevento, mapactual, numlink, &updatemap, &auxmalloc, VISION, tamMapa, graph, controles, personaje, map, evento, items, puertas);
-	} while (1);
+		for (k = 0; k < VISION.X + 1; k++)
+			puts(auxmap[k]);
+		if (map[personaje->pos.Y][personaje->pos.X] == graph.PLAINS)
+			strcpy(descripcion, "Llanos");
+		else if (map[personaje->pos.Y][personaje->pos.X] == graph.DOOR)
+			strcpy(descripcion, "Puerta");
+		else if (map[personaje->pos.Y][personaje->pos.X] == graph.EVENT)
+		{
+			k = busquedaEvento(numevento, *personaje, evento);
+			strcpy(descripcion, evento[k].nombre);
+		}
+		printf("\nMapa: %hd\n%s", mapactual + 1, descripcion);
+	}
+	return;
 }

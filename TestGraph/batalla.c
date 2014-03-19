@@ -1,8 +1,8 @@
 ﻿#include "cabecera.h"
 
-void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
+void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
-	int k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
+	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
 	char mov, mapaBatalla[5][11];
 	FILE *FILEmapaBatalla, *FILEenemigos;
 	STRUCTpos pjBatalla;
@@ -47,11 +47,11 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 	for (k = 0; k < numenemigos; k++)
 	{
 		fscanf(FILEenemigos, "%[^\n]s", enemigos[k].nombre);
-		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minHP, &enemigos[k].maxHP);
-		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minDmg, &enemigos[k].maxDmg);
-		fscanf(FILEenemigos, "%d %d\n", &enemigos[k].minEXP, &enemigos[k].maxEXP);
+		fscanf(FILEenemigos, "%hd %hd\n", &enemigos[k].minHP, &enemigos[k].maxHP);
+		fscanf(FILEenemigos, "%hd %hd\n", &enemigos[k].minDmg, &enemigos[k].maxDmg);
+		fscanf(FILEenemigos, "%hd %hd\n", &enemigos[k].minEXP, &enemigos[k].maxEXP);
 		fscanf(FILEenemigos, "%[^\n]s", enemigos[k].drop);
-		fscanf(FILEenemigos, "%d\n", &enemigos[k].dropChance);
+		fscanf(FILEenemigos, "%hd\n", &enemigos[k].dropChance);
 		enemigos[k].graph = enemigos[k].nombre[0];
 	}
 	fclose(FILEenemigos);
@@ -69,7 +69,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 		}
 		for (i = 0; i < enemigos[k].num; i++)
 		{
-			sprintf(enemigosSPAWN[l].nombre, "%s %d", enemigos[k].nombre, i + 1);
+			sprintf(enemigosSPAWN[l].nombre, "%s %hd", enemigos[k].nombre, i + 1);
 			enemigosSPAWN[l].minDmg = enemigos[k].minDmg;
 			enemigosSPAWN[l].maxDmg = enemigos[k].maxDmg;
 			enemigosSPAWN[l].graph = enemigos[k].graph;
@@ -89,7 +89,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 			}
 			enemigosSPAWN[l].pos.X = rand() % 8 + 1;
 			enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
-			while (enemigosSPAWN[l].pos.X == 4 && enemigosSPAWN[l].pos.Y == 3)
+			while (enemigosSPAWN[l].pos.X == pjBatalla.X && enemigosSPAWN[l].pos.Y == pjBatalla.Y)
 			{
 				enemigosSPAWN[l].pos.X = rand() % 8 + 1;
 				enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
@@ -139,9 +139,9 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 			if (flecha == 4)
 				printf("->");
 			printf("  Huir\n");
-			printf("\n\nHP: %d / %d\n"
-				"MP: %d / %d\n"
-				"EXP: %d / %d", personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->EXP, personaje->LVL * 100);
+			printf("\n\nHP: %hd / %hd\n"
+				"MP: %hd / %hd\n"
+				"EXP: %hd / %hd", personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->EXP, personaje->LVL * 100);
 			sel = flecha;
 			flecha = menuFlecha(4, flecha, controles);
 			if (flecha == 0)
@@ -193,48 +193,59 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 				case 2:
 					system("cls");
 					numprintEnemy = 0;
-					for (l = 0; l < numSpawn; l++)
+					if (personaje->inventario[personaje->weapEquip].isRanged == false)
 					{
-						if (pjBatalla.X + 1 == enemigosSPAWN[l].pos.X)
+						for (l = 0; l < numSpawn; l++)
 						{
-							if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
+							if (pjBatalla.X + 1 == enemigosSPAWN[l].pos.X)
 							{
-								printEnemy[numprintEnemy] = l;
-								numprintEnemy++;
+								if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
+								{
+									printEnemy[numprintEnemy] = l;
+									numprintEnemy++;
+								}
+							}
+						}
+						for (l = 0; l < numSpawn; l++)
+						{
+							if (pjBatalla.X - 1 == enemigosSPAWN[l].pos.X)
+							{
+								if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
+								{
+									printEnemy[numprintEnemy] = l;
+									numprintEnemy++;
+								}
+							}
+						}
+						for (l = 0; l < numSpawn; l++)
+						{
+							if (pjBatalla.Y + 1 == enemigosSPAWN[l].pos.Y)
+							{
+								if (pjBatalla.X == enemigosSPAWN[l].pos.X)
+								{
+									printEnemy[numprintEnemy] = l;
+									numprintEnemy++;
+								}
+							}
+						}
+						for (l = 0; l < numSpawn; l++)
+						{
+							if (pjBatalla.Y - 1 == enemigosSPAWN[l].pos.Y)
+							{
+								if (pjBatalla.X == enemigosSPAWN[l].pos.X)
+								{
+									printEnemy[numprintEnemy] = l;
+									numprintEnemy++;
+								}
 							}
 						}
 					}
-					for (l = 0; l < numSpawn; l++)
+					else
 					{
-						if (pjBatalla.X - 1 == enemigosSPAWN[l].pos.X)
+						for (l = 0; l < numSpawn; l++)
 						{
-							if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
-							{
-								printEnemy[numprintEnemy] = l;
-								numprintEnemy++;
-							}
-						}
-					}
-					for (l = 0; l < numSpawn; l++)
-					{
-						if (pjBatalla.Y + 1 == enemigosSPAWN[l].pos.Y)
-						{
-							if (pjBatalla.X == enemigosSPAWN[l].pos.X)
-							{
-								printEnemy[numprintEnemy] = l;
-								numprintEnemy++;
-							}
-						}
-					}
-					for (l = 0; l < numSpawn; l++)
-					{
-						if (pjBatalla.Y - 1 == enemigosSPAWN[l].pos.Y)
-						{
-							if (pjBatalla.X == enemigosSPAWN[l].pos.X)
-							{
-								printEnemy[numprintEnemy] = l;
-								numprintEnemy++;
-							}
+							printEnemy[numprintEnemy] = l;
+							numprintEnemy++;
 						}
 					}
 					m = 1;
@@ -251,7 +262,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 						{
 							if (l == m)
 								printf("->");
-							printf("  %s  HP:%d\n", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[printEnemy[l - 1]].HP);
+							printf("  %s  HP:%hd\n", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[printEnemy[l - 1]].HP);
 						}
 						l = m;
 						m = menuFlecha(numprintEnemy, m, controles);
@@ -262,7 +273,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 							RANDMAX = personaje->maxDmg - personaje->minDmg;
 							dmgdealt = rand() % RANDMAX + RANDMIN;
 							enemigosSPAWN[printEnemy[l - 1]].HP = enemigosSPAWN[printEnemy[l - 1]].HP - dmgdealt;
-							printf("\nHas hecho %d de daño a %s!", dmgdealt, enemigosSPAWN[printEnemy[l - 1]].nombre);
+							printf("\nHas hecho %hd de daño a %s!", dmgdealt, enemigosSPAWN[printEnemy[l - 1]].nombre);
 							if (enemigosSPAWN[printEnemy[l - 1]].HP <= 0)
 							{
 								if ((rand() % enemigosSPAWN[printEnemy[l - 1]].dropChance) == 0)
@@ -274,15 +285,15 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 								}
 								numSpawn--;
 								personaje->EXP = personaje->EXP + enemigosSPAWN[l - 1].EXP;
-								printf("\n%s ha muerto!\nConseguidos %d de EXP\n\t|\n\tv", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[l - 1].EXP);
+								printf("\n%s ha muerto!\nConseguidos %hd de EXP\n\t|\n\tv", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[l - 1].EXP);
 								getch();
 								mapaBatalla[enemigosSPAWN[printEnemy[l - 1]].pos.Y][enemigosSPAWN[printEnemy[l - 1]].pos.X] = '-';
 								if (personaje->EXP >= personaje->LVL * 100)
 								{
 									system("cls");
 									printf("Has ganado 1 nivel!\n\n"
-										"+%d Fuerza\n"
-										"+%d HP\n", personaje->LVL, personaje->LVL * 2);
+										"+%hd Fuerza\n"
+										"+%hd HP\n", personaje->LVL, personaje->LVL * 2);
 									personaje->EXP = personaje->EXP - personaje->LVL * 100;
 									personaje->LVL++;
 									personaje->STR = personaje->STR + personaje->LVL;
@@ -332,7 +343,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
 				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
 				else
@@ -345,7 +356,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
 				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
 				else
@@ -358,7 +369,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
 				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
 				else
@@ -371,7 +382,7 @@ void batalla(int numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
 				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %d de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
+				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
 				if (turno == numSpawn)
 					turno = 0;
 				else

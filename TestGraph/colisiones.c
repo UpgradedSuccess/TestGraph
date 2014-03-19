@@ -1,6 +1,6 @@
 #include "cabecera.h"
 
-int colisiones(char comp)
+short colisiones(char comp)
 {
 	if (comp == '#')
 	{
