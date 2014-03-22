@@ -23,7 +23,10 @@ int main()
 	{
 		bat = rand() % 25;
 		if (bat == 0)
+		{
 			batalla(numitems, controles, &personaje, items);
+			updatemap = true;
+		}
 		display(evento, VISION, tamMapa, graph, &personaje, map, updatemap, numevento, mapactual);
 		mov = movimiento(numevento, &updatemap, map, &controles, &personaje, evento);
 		switch (mov)

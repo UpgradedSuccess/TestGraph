@@ -86,7 +86,7 @@ void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapact
 	}
 	do
 	{
-		for (k = 0; k < numsave; k++)
+		for (k = 0; k < 3; k++)
 		{
 			system("cls");
 			for (k = 1; k < 4; k++)
@@ -103,7 +103,10 @@ void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapact
 			if (flecha == 0)
 			{
 				flecha = 1;
-				sprintf(nombre, "data\\save%hd.txt", k);
+				if (numsave < 3 && k > numsave)
+					sprintf(nombre, "data\\save%hd.txt", numsave + 1);
+				else
+					sprintf(nombre, "data\\save%hd.txt", k);
 				FILEsave = fopen(nombre, "wt");
 				fprintf(FILEsave, "%s\n", personaje.nombre);
 				fprintf(FILEsave, "%hd %hd\n", personaje.HP, personaje.HPLEFT);

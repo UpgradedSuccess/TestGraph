@@ -5,9 +5,9 @@ void display(STRUCTeventos *evento, STRUCTpos VISION, STRUCTpos tamMapa, STRUCTg
 	char **auxmap = 0, descripcion[10];
 	STRUCTpos aux;
 
-	system("cls");
 	if (updatemap == true)
 	{
+		system("cls");
 		auxmap = (char**)malloc((VISION.X + 2) * (VISION.Y + 1) * 4);
 		for (k = 0; k < tamMapa.X; k++)
 			auxmap[k] = (char*)malloc(VISION.X * 2 * sizeof(char));
