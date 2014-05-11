@@ -1,35 +1,49 @@
 ﻿#include "cabecera.h"
+#define mapFIL 6
+#define mapCOL 12
 
 void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
 	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
-	char mov, mapaBatalla[5][11];
-	FILE *FILEmapaBatalla, *FILEenemigos;
+	char mov, **mapaBatalla;
+	FILE *FILEenemigos;
 	STRUCTpos pjBatalla;
 	STRUCTenemigos *enemigos;
 	STRUCTenemigosSPAWN *enemigosSPAWN;
 
 	system("cls");
-	pjBatalla.Y = 3;
-	pjBatalla.X = 4;
-	for (k = 0; k < 5; k++)
+	pjBatalla.X = rand() % (mapCOL - 4) + 1;
+	pjBatalla.Y = rand() % (mapFIL - 2) + 1;
+	for (k = 0; k < mapFIL; k++)
 	{
-		for (i = 0; i < 10; i++)
+		for (i = 0; i < mapCOL; i++)
 		{
 			printf("#");
 			Sleep(15);
 		}
 		printf("\n");
 	}
-	FILEmapaBatalla = fopen("data\\mapaBatalla.txt", "rt");
-	if (FILEmapaBatalla == NULL)
+
+	mapaBatalla = (char**)malloc(mapCOL * sizeof(char*));
+	for (k = 0; k < mapCOL; k++)
+		mapaBatalla[k] = (char*)malloc(mapFIL * sizeof(char));
+
+	sprintf(mapaBatalla[0], "##########");
+	for (k = 1; k < mapFIL - 1; k++)
 	{
-		printf("Error al abrir el archivo 'mapaBatalla.txt'\n");
-		exit(0);
+		sprintf(mapaBatalla[k], "#--------#");
 	}
-	for (k = 0; k < 5; k++)
-		fscanf(FILEmapaBatalla, "%s", mapaBatalla[k]);
-	fclose(FILEmapaBatalla);
+	sprintf(mapaBatalla[mapFIL - 1], "##########");
+	k = rand() % mapFIL + 1;
+	for (i = 0; i < k; i++)
+	{
+		do 
+		{
+			j = rand() % (mapCOL - 4) + 1;
+			l = rand() % (mapFIL - 2) + 1;
+		} while (j != pjBatalla.X && l != pjBatalla.Y);
+		mapaBatalla[l][j] = '#';
+	}
 	FILEenemigos = fopen("data\\enemigos.txt", "rt");
 	if (FILEenemigos == NULL)
 	{
@@ -87,61 +101,64 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					enemigosSPAWN[l].dropChance = enemigos[k].dropChance;
 				}
 			}
-			enemigosSPAWN[l].pos.X = rand() % 8 + 1;
-			enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
-			while (enemigosSPAWN[l].pos.X == pjBatalla.X && enemigosSPAWN[l].pos.Y == pjBatalla.Y)
+			do
 			{
-				enemigosSPAWN[l].pos.X = rand() % 8 + 1;
-				enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
-			}
+				enemigosSPAWN[l].pos.X = rand() % (mapCOL - 4) + 1;
+				enemigosSPAWN[l].pos.Y = rand() % (mapFIL - 2) + 1;
+			} while ((enemigosSPAWN[l].pos.X != pjBatalla.X && enemigosSPAWN[l].pos.Y != pjBatalla.Y) || (mapaBatalla[enemigosSPAWN[l].pos.Y][enemigosSPAWN[l].pos.X] != '#'));
 			for (j = 0; j <= numSpawn; j++)
 			{
 				if (j != l)
 				{
 					while (enemigosSPAWN[l].pos.X == enemigosSPAWN[j].pos.X && enemigosSPAWN[l].pos.Y == enemigosSPAWN[j].pos.Y)
 					{
-						enemigosSPAWN[l].pos.X = rand() % 8 + 1;
-						enemigosSPAWN[l].pos.Y = rand() % 3 + 1;
+						enemigosSPAWN[l].pos.X = rand() % (mapCOL - 4) + 1;
+						enemigosSPAWN[l].pos.Y = rand() % (mapFIL - 2) + 1;
 					}
 				}
 			}
 			l++;
 		}
 	}
+	update = 1;
 	do
 	{
 		if (personaje->HPLEFT <= 0)
 			defeat();
-		system("cls");
 		if (update == 1)
 		{
+			system("cls");
 			mapaBatalla[pjBatalla.Y][pjBatalla.X] = '*';
 			for (k = 0; k < numSpawn; k++)
 			{
 				mapaBatalla[enemigosSPAWN[k].pos.Y][enemigosSPAWN[k].pos.X] = enemigosSPAWN[k].graph;
 			}
+			for (k = 0; k < mapFIL; k++)
+				puts(mapaBatalla[k]);
+			if (turno == 0)
+			{
+				printf("\n\n");
+				update = 0;
+				if (flecha == 1)
+					printf("->");
+				printf("  Mover\n");
+				if (flecha == 2)
+					printf("->");
+				printf("  Atacar\n");
+				if (flecha == 3)
+					printf("->");
+				printf("  Esperar\n");
+				if (flecha == 4)
+					printf("->");
+				printf("  Huir\n");
+				printf("\n\nHP: %hd / %hd\n"
+					"MP: %hd / %hd\n"
+					"EXP: %hd / %hd", personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->EXP, personaje->LVL * 100);
+			}
 		}
-		for (k = 0; k < 5; k++)
-			puts(mapaBatalla[k]);
 		if (turno == 0)
 		{
-			printf("\n\n");
-			update = 0;
-			if (flecha == 1)
-				printf("->");
-			printf("  Mover\n");
-			if (flecha == 2)
-				printf("->");
-			printf("  Atacar\n");
-			if (flecha == 3)
-				printf("->");
-			printf("  Esperar\n");
-			if (flecha == 4)
-				printf("->");
-			printf("  Huir\n");
-			printf("\n\nHP: %hd / %hd\n"
-				"MP: %hd / %hd\n"
-				"EXP: %hd / %hd", personaje->HPLEFT, personaje->HP, personaje->MPLEFT, personaje->MP, personaje->EXP, personaje->LVL * 100);
+			update = 1;
 			sel = flecha;
 			flecha = menuFlecha(4, flecha, controles);
 			if (flecha == 0)
@@ -249,21 +266,26 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 						}
 					}
 					m = 1;
+					update = 1;
 					do
 					{
-						system("cls");
-						if (numprintEnemy == 0)
+						if (update == 1)
 						{
-							printf("No hay ningún enemigo al alcance.");
-							getch();
-							break;
+							system("cls");
+							if (numprintEnemy == 0)
+							{
+								printf("No hay ningún enemigo al alcance.");
+								getch();
+								break;
+							}
+							for (l = 1; l < numprintEnemy + 1; l++)
+							{
+								if (l == m)
+									printf("->");
+								printf("  %s  HP:%hd\n", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[printEnemy[l - 1]].HP);
+							}
 						}
-						for (l = 1; l < numprintEnemy + 1; l++)
-						{
-							if (l == m)
-								printf("->");
-							printf("  %s  HP:%hd\n", enemigosSPAWN[printEnemy[l - 1]].nombre, enemigosSPAWN[printEnemy[l - 1]].HP);
-						}
+						update = 1;
 						l = m;
 						m = menuFlecha(numprintEnemy, m, controles);
 						if (m == 0)
@@ -318,7 +340,10 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 						else if (m == -1)
 							break;
 						else if (m == -2)
+						{
+							update = 0;
 							m = l;
+						}
 					} while (1);
 					break;
 				case 3:
@@ -332,6 +357,11 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					turno++;
 					break;
 				}
+			}
+			else if (flecha == -1 || flecha == -2)
+			{
+				flecha = sel;
+				update = 0;
 			}
 		}
 		else
@@ -457,7 +487,10 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 			}
 		}
 		if (flecha == -1 || flecha == -2)
+		{
 			flecha = sel;
+			update = 0;
+		}
 	} while (1);
 	free(enemigosSPAWN);
 	free(enemigos);

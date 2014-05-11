@@ -34,8 +34,6 @@ int main()
 		case 1:
 			if ((busquedaPuerta(&mapactual, &numlink, &personaje, puertas)) == 1)
 			{
-				for (k = 0; k <= tamMapa.Y; k++)
-					free(map[k]);
 				free(evento);
 				updatemap = true;
 				lectura(&numevento, &mapactual, &numlink, &tamMapa, &map, &evento, &puertas);

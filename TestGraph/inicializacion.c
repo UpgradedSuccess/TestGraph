@@ -241,21 +241,25 @@ short loadgame(STRUCTcontroles controles, STRUCTitem **items, STRUCTpersonaje *p
 
 void intromenu(STRUCTitem **items, STRUCTcontroles controles, STRUCTpersonaje *personaje, short *mapactual)
 {
-	short flecha = 1, sel;
+	short flecha = 1, sel, update = 1;
 
 	do
 	{
-		system("cls");
-		printf("     --Bienvenido a TestGraph!--\n\n");
-		if (flecha == 1)
-			printf("->");
-		printf("  Nuevo juego\n");
-		if (flecha == 2)
-			printf("->");
-		printf("  Cargar juego\n");
-		if (flecha == 3)
-			printf("->");
-		printf("  Salir\n");
+		if (update == 1)
+		{
+			system("cls");
+			printf("     --Bienvenido a TestGraph!--\n\n");
+			if (flecha == 1)
+				printf("->");
+			printf("  Nuevo juego\n");
+			if (flecha == 2)
+				printf("->");
+			printf("  Cargar juego\n");
+			if (flecha == 3)
+				printf("->");
+			printf("  Salir\n");
+		}
+		update = 1;
 		sel = flecha;
 		flecha = menuFlecha(3, flecha, controles);
 		if (flecha == 0)
@@ -302,7 +306,10 @@ void intromenu(STRUCTitem **items, STRUCTcontroles controles, STRUCTpersonaje *p
 		else if (flecha == -1)
 			flecha = sel;
 		else if (flecha == -2)
+		{
 			flecha = sel;
+			update = 0;
+		}
 	} while (1);
 
 }

@@ -2,24 +2,28 @@
 
 void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje)
 {
-	short flecha = 1, sel;
+	short flecha = 1, sel, update = 1;
 
 	do
 	{
-		system("cls");
-		printf("\t-Menú de administrador-\n\n");
-		if (flecha == 1)
-			printf("->");
-		printf("  Cambiar controles\n");
-		if (flecha == 2)
-			printf("->");
-		printf("  Cambiar visión\n");
-		if (flecha == 3)
-			printf("->");
-		printf("  Cambiar gráficos de terreno\n");
-		if (flecha == 4)
-			printf("->");
-		printf("  Cambiar nombre del jugador\n");
+		if (update == 1)
+		{
+			system("cls");
+			printf("\t-Menú de administrador-\n\n");
+			if (flecha == 1)
+				printf("->");
+			printf("  Cambiar controles\n");
+			if (flecha == 2)
+				printf("->");
+			printf("  Cambiar visión\n");
+			if (flecha == 3)
+				printf("->");
+			printf("  Cambiar gráficos de terreno\n");
+			if (flecha == 4)
+				printf("->");
+			printf("  Cambiar nombre del jugador\n");
+		}
+		update = 1;
 		sel = flecha;
 		flecha = menuFlecha(4, flecha, *controles);
 		if (flecha == 0)
@@ -93,33 +97,41 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 		else if (flecha == -1)
 			return;
 		else if (flecha == -2)
+		{
+			update = 0;
 			flecha = sel;
+			continue;
+		}
 	} while (1);
 }
 
 void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, short mapactual)
 {
-	short flecha = 1, k, i = 1, aux = 0, sel;
+	short flecha = 1, k, i = 1, aux = 0, sel, update = 1;
 
 	do
 	{
-		system("cls");
-		printf("\t-Menú-\n");
-		if (flecha == 1)
-			printf("->");
-		printf("  Estado\n");
-		if (flecha == 2)
-			printf("->");
-		printf("  Equipo\n");
-		if (flecha == 3)
-			printf("->");
-		printf("  Inventario\n");
-		if (flecha == 4)
-			printf("->");
-		printf("  Habilidades\n");
-		if (flecha == 5)
-			printf("->");
-		printf("  Guardar partida\n");
+		if (update == 1)
+		{
+			system("cls");
+			printf("\t-Menú-\n");
+			if (flecha == 1)
+				printf("->");
+			printf("  Estado\n");
+			if (flecha == 2)
+				printf("->");
+			printf("  Equipo\n");
+			if (flecha == 3)
+				printf("->");
+			printf("  Inventario\n");
+			if (flecha == 4)
+				printf("->");
+			printf("  Habilidades\n");
+			if (flecha == 5)
+				printf("->");
+			printf("  Guardar partida\n");
+		}
+		update = 1;
 		sel = flecha;
 		flecha = menuFlecha(5, flecha, controles);
 		if (flecha == 0)
@@ -150,15 +162,19 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 			case 3:
 				do
 				{
-					system("cls");
-					for (k = 1; k < personaje->invent + 1; k++)
+					if (update == 1)
 					{
-						if (k == i)
-							printf("->");
-						if (k == personaje->armorEquip + 1 || k == personaje->weapEquip + 1)
-							printf("  -E-");
-						printf("  %s  %hdx\n", personaje->inventario[k - 1].nombre, personaje->inventario[k - 1].num);
+						system("cls");
+						for (k = 1; k < personaje->invent + 1; k++)
+						{
+							if (k == i)
+								printf("->");
+							if (k == personaje->armorEquip + 1 || k == personaje->weapEquip + 1)
+								printf("  -E-");
+							printf("  %s  %hdx\n", personaje->inventario[k - 1].nombre, personaje->inventario[k - 1].num);
+						}
 					}
+					update = 1;
 					k = i;
 					i = menuFlecha(personaje->invent, i, controles);
 					if (i == 0)
@@ -187,6 +203,7 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 					else if (i == -2)
 					{
 						i = k;
+						update = 0;
 						continue;
 					}
 				} while (1);
@@ -205,6 +222,7 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 		else if (flecha == -2)
 		{
 			flecha = sel;
+			update = 0;
 			continue;
 		}
 	} while (1);
