@@ -21,6 +21,8 @@ void error(short err, short mapa)
 	case 5:
 		printf("Error al abrir el archivo 'mapa%hd.txt'\n", mapa);
 		break;
+	case 6:
+		printf("Error desconocido.");
 	}
 	getch();
 	exit(0);
