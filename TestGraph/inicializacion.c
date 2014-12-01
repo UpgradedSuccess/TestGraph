@@ -2,34 +2,33 @@
 
 void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles, STRUCTpersonaje *personaje, STRUCTitem **items, short *mapactual)
 {
-	FILE *FILEitems;
+	FILE *FILEitems, *FILEconfig;
 	short k = 0;
 	char buffer, cmdSize[30];
 
-	controles->UP = 'w';
-	controles->DOWN = 's';
-	controles->LEFT = 'a';
-	controles->RIGHT = 'd';
-	controles->ACTION = 'e';
-	controles->BACK = 'q';
-	controles->SPECIAL = 'p';
-	controles->MENU = 'm';
-	VISION->X = 4;
-	VISION->Y = 2;
+	system("title TestGraph");
+	FILEconfig = fopen("data\\config.txt", "rt");
+	controles->UP = fgetc(FILEconfig);
+	controles->DOWN = fgetc(FILEconfig);
+	controles->LEFT = fgetc(FILEconfig);
+	controles->RIGHT = fgetc(FILEconfig);
+	controles->ACTION = fgetc(FILEconfig);
+	controles->BACK = fgetc(FILEconfig);
+	controles->SPECIAL = fgetc(FILEconfig);
+	controles->MENU = fgetc(FILEconfig);
+	graph->PLAINS = fgetc(FILEconfig);
+	graph->WALL = fgetc(FILEconfig);
+	graph->EVENT = fgetc(FILEconfig);
+	graph->DOOR = fgetc(FILEconfig);
+	graph->PJ = fgetc(FILEconfig);
+	fscanf(FILEconfig, "%hd", &VISION->X);
+	fscanf(FILEconfig, "%hd", &VISION->Y);
 	sprintf(cmdSize, "mode con: cols=36 lines=20");
 	system(cmdSize);
-	graph->PLAINS = '-';
-	graph->WALL = '#';
-	graph->EVENT = '!';
-	graph->DOOR = 'E';
-	graph->PJ = '*';
 	FILEitems = fopen("data\\items.txt", "rt");
 	if (FILEitems == NULL)
-	{
-		printf("Error al abrir el archivo 'items.txt'\n");
-		exit(0);
-	}
-	while (feof(FILEitems) == 0)
+		error(4);
+	while (feof(FILEitems) == 0) // Conteo de objetos.
 	{
 		buffer = fgetc(FILEitems);
 		if (buffer == '+' || buffer == '-')
@@ -42,10 +41,10 @@ void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRU
 	if ((*items) == NULL)
 		error(1);
 	rewind(FILEitems);
-	for (k = 0; k < (*numitems); k++)
+	for (k = 0; k < (*numitems); k++) // Almacenado de objetos.
 	{
 		buffer = fgetc(FILEitems);
-		if (buffer == '+')
+		if (buffer == '+') // Arma.
 		{
 			fscanf(FILEitems, "%[^\n]s", (*items)[k].nombre);
 			fscanf(FILEitems, "%hd %hd", &(*items)[k].minDmg, &(*items)[k].maxDmg);
@@ -54,7 +53,7 @@ void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRU
 			(*items)[k].tipo = 0;
 			fgetc(FILEitems);
 		}
-		else if (buffer == '-')
+		else if (buffer == '-') // Armadura.
 		{
 			fscanf(FILEitems, "%[^\n]s", (*items)[k].nombre);
 			fscanf(FILEitems, "%hd", &(*items)[k].def);
@@ -67,14 +66,14 @@ void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRU
 	return;
 }
 
-void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapactual)
+void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapactual, STRUCTgraph graph, STRUCTpos VISION)
 {
 	char nombre[20], nombresave[3][20];
 	short k, numsave = 0, flecha = 1;
-	FILE *FILEsave;
+	FILE *FILEsave, *FILEconfig;
 
 	system("cls");
-	for (k = 0; k < 3; k++)
+	for (k = 0; k < 3; k++) // Conteo y almacenado de partidas guardadas.
 	{
 		sprintf(nombre, "data\\save%hd.txt", k + 1);
 		FILEsave = fopen(nombre, "rt");
@@ -84,7 +83,7 @@ void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapact
 		numsave++;
 		fclose(FILEsave);
 	}
-	do
+	do // Menú de guardado.
 	{
 		for (k = 0; k < 3; k++)
 		{
@@ -139,6 +138,23 @@ void savegame(STRUCTcontroles controles, STRUCTpersonaje personaje, short mapact
 				printf("\nPartida guardada.\n");
 				getch();
 				fclose(FILEsave);
+				FILEconfig = fopen("data\\config.txt", "wt");
+				fprintf(FILEconfig, "%c", controles.UP);
+				fprintf(FILEconfig, "%c", controles.DOWN);
+				fprintf(FILEconfig, "%c", controles.LEFT);
+				fprintf(FILEconfig, "%c", controles.RIGHT);
+				fprintf(FILEconfig, "%c", controles.ACTION);
+				fprintf(FILEconfig, "%c", controles.BACK);
+				fprintf(FILEconfig, "%c", controles.SPECIAL);
+				fprintf(FILEconfig, "%c", controles.MENU);
+				fprintf(FILEconfig, "%c", graph.PLAINS);
+				fprintf(FILEconfig, "%c", graph.WALL);
+				fprintf(FILEconfig, "%c", graph.EVENT);
+				fprintf(FILEconfig, "%c", graph.DOOR);
+				fprintf(FILEconfig, "%c", graph.PJ);
+				fprintf(FILEconfig, "%hd", VISION.X);
+				fprintf(FILEconfig, "%hd", VISION.Y);
+				fclose(FILEconfig);
 				return;
 			}
 			else if (flecha == -1)
@@ -268,7 +284,9 @@ void intromenu(STRUCTitem **items, STRUCTcontroles controles, STRUCTpersonaje *p
 			switch (sel)
 			{
 			case 1:
-				strcpy(personaje->nombre, "Personaje");
+				system("cls");
+				printf("Introduzca el nombre de su personaje: ");
+				scanf("%[^\n]s", personaje->nombre);
 				personaje->HP = 30;
 				personaje->INT = 10;
 				personaje->MP = 10 + (personaje->INT / 10);

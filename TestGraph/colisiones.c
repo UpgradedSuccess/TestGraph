@@ -1,16 +1,17 @@
 #include "cabecera.h"
 
-short colisiones(char comp)
+short colisiones(bool *update, char comp)
 {
-	if (comp == '#')
+	if (comp == '#') // Muro.
 	{
-		printf("\a");
+		(*update) = false;
+		printf("\a"); // Beep!
 		return 0;
 	}
-	else if (comp == '-' || comp == '!')
+	else if (comp == '-' || comp == '!') // Llano o NPC.
 		return 1;
-	else if (comp == 'E')
+	else if (comp == 'E') // Puerta.
 		return 2;
-	else
+	else // Error
 		return 0;
 }

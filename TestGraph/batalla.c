@@ -2,7 +2,7 @@
 #define mapFIL 6
 #define mapCOL 12
 
-void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
+void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
 	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
 	char mov, **mapaBatalla;
@@ -172,7 +172,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					mov = getch();
 					if (mov == controles.UP)
 					{
-						if (colisiones(mapaBatalla[pjBatalla.Y - 1][pjBatalla.X]) == 1)
+						if (colisiones(update1, mapaBatalla[pjBatalla.Y - 1][pjBatalla.X]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.Y--;
@@ -181,7 +181,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					}
 					else if (mov == controles.LEFT)
 					{
-						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X - 1]) == 1)
+						if (colisiones(update1, mapaBatalla[pjBatalla.Y][pjBatalla.X - 1]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.X--;
@@ -190,7 +190,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					}
 					else if (mov == controles.DOWN)
 					{
-						if (colisiones(mapaBatalla[pjBatalla.Y + 1][pjBatalla.X]) == 1)
+						if (colisiones(update1, mapaBatalla[pjBatalla.Y + 1][pjBatalla.X]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.Y++;
@@ -199,7 +199,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					}
 					else if (mov == controles.RIGHT)
 					{
-						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]) == 1)
+						if (colisiones(update1, mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.X++;

@@ -43,6 +43,8 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 				controles->RIGHT = getch();
 				printf("\nIntroduzca tecla para ACTION: ");
 				controles->ACTION = getch();
+				printf("\nIntroduzca tecla para BACK: ");
+				controles->BACK = getch();
 				printf("\nIntroduzca tecla para MENU: ");
 				controles->MENU = getch();
 				break;
@@ -105,7 +107,7 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 	} while (1);
 }
 
-void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, short mapactual)
+void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, short mapactual, STRUCTgraph graph, STRUCTpos VISION)
 {
 	short flecha = 1, k, i = 1, aux = 0, sel, update = 1;
 
@@ -210,7 +212,7 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 				i = 1;
 				break;
 			case 5:
-				savegame(controles, *personaje, mapactual);
+				savegame(controles, *personaje, mapactual, graph, VISION);
 				break;
 			default:
 				break;

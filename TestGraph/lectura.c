@@ -9,11 +9,8 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 	sprintf(nombre, "data\\mapa%hd.txt", (*mapactual) + 1);
 	FILEmapa = fopen(nombre, "rt");
 	if (FILEmapa == NULL)
-	{
-		printf("Error al abrir el archivo 'mapa%hd.txt'\n", (*mapactual) + 1);
-		exit(0);
-	}
-	while (feof(FILEmapa) == 0)
+		error(5, (*mapactual) + 1);
+	while (feof(FILEmapa) == 0) // Conteo del tamaño del mapa a leer.
 	{
 		if (fgetc(FILEmapa) == '\n')
 		{
@@ -52,17 +49,17 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 	}
 	(*evento) = (STRUCTeventos*)malloc(1 * sizeof(STRUCTeventos));
 	*numevento = 0;
-	while (feof(FILEeventos) == 0) //Conteo y redimensión de las frases por evento
+	while (feof(FILEeventos) == 0) // Conteo y redimensión de las frases de los NPCs.
 	{
 		buffer = fgetc(FILEeventos);
-		if (buffer == '.')
+		if (buffer == '.')  // Diálogo del NPC.
 		{
 			auxnumTexto++;
 			(*evento)[(*numevento)- 1].text = (char**)malloc(auxnumTexto * sizeof(char*));
 			for (k = 0; k < auxnumTexto;k++)
 				(*evento)[(*numevento)- 1].text[k] = (char*)malloc(30 * sizeof(char));
 		}
-		else if (buffer == '-')
+		else if (buffer == '-') // Coordenadas y nombre del NPC
 		{
 			auxnumTexto = 0;
 			(*evento) = (STRUCTeventos*)realloc((*evento), ((*numevento)+ 1) * sizeof(STRUCTeventos));
@@ -73,9 +70,9 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 	for (k = 0; k < (*numevento); k++)
 		(*evento)[k].numTexto = 0;
 	(*numevento)= 0;
-	while (feof(FILEeventos) == 0)
+	while (feof(FILEeventos) == 0) // Almacenado de NPCs y diálogos.
 	{
-		if (fgetc(FILEeventos) == '-')
+		if (fgetc(FILEeventos) == '-') // Coordenadas del NPC.
 		{
 			fscanf(FILEeventos, "%hd %hd\n", &(*evento)[(*numevento)].posEvento.Y, &(*evento)[(*numevento)].posEvento.X);
 			(*map)[(*evento)[(*numevento)].posEvento.Y][(*evento)[(*numevento)].posEvento.X] = '!';
@@ -83,7 +80,7 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 			fgetc(FILEeventos);
 			(*numevento)++;
 		}
-		else
+		else // Nombre y diálogos del NPC.
 		{
 			fscanf(FILEeventos, "%[^\n]s", (*evento)[(*numevento)-1].text[(*evento)[(*numevento)-1].numTexto]);
 			fgetc(FILEeventos);
@@ -93,7 +90,7 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 		}
 	}
 	fclose(FILEeventos);
-	//##Lectura de links#//
+	//##Lectura de puertas#//
 	FILElinks = fopen("data\\links.txt", "rt");
 	if (FILElinks == NULL)
 	{
@@ -103,7 +100,7 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 		return;
 	}
 	(*numlink) = 0;
-	while (feof(FILElinks) == 0) //Conteo y redimensión de links
+	while (feof(FILElinks) == 0) //Conteo y redimensión de puertas.
 	{
 		if (fgetc(FILElinks) == '\n')
 			(*numlink)++;
@@ -111,17 +108,17 @@ void lectura(short *numevento, short *mapactual, short *numlink, STRUCTpos *tamM
 	rewind(FILElinks);
 	(*puertas) = (STRUCTlink*)malloc((*numlink) * sizeof(STRUCTlink));
 	k = 0;
-	while (feof(FILElinks) == 0) //Lectura de links
+	while (feof(FILElinks) == 0) //Lectura de puertas.
 	{
 		fscanf(FILElinks, "%hd %hd %hd\n", &(*puertas)[k].map[0], &(*puertas)[k].Y[0], &(*puertas)[k].X[0]);
 		fscanf(FILElinks, "%hd %hd %hd\n", &(*puertas)[k].map[1], &(*puertas)[k].Y[1], &(*puertas)[k].X[1]);
 
-		if ((*mapactual) == (*puertas)[k].map[0])
+		if ((*mapactual) == (*puertas)[k].map[0]) // Pareja 1.
 		{
 			(*map)[(*puertas)[k].Y[0]][(*puertas)[k].X[0]] = 'E';
 			k++;
 		}
-		else if ((*mapactual) == (*puertas)[k].map[1])
+		else if ((*mapactual) == (*puertas)[k].map[1]) // Pareja 2.
 		{
 			(*map)[(*puertas)[k].Y[1]][(*puertas)[k].X[1]] = 'E';
 			k++;

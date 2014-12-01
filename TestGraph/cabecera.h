@@ -108,7 +108,7 @@ typedef struct
 	short numTexto;
 } STRUCTeventos;
 
-short movimiento(short, bool*, char**, STRUCTcontroles*, STRUCTpersonaje*, STRUCTeventos*);
+short movimiento(bool*, short, bool*, char**, STRUCTcontroles*, STRUCTpersonaje*, STRUCTeventos*);
 void lectura(short*, short*, short*, STRUCTpos*, char***, STRUCTeventos**, STRUCTlink**);
 void display(STRUCTeventos*, STRUCTpos, STRUCTpos, STRUCTgraph, STRUCTpersonaje*, char**, bool, short, short);
 void error(short);
@@ -117,11 +117,11 @@ void instrucciones();
 void adminmenu(STRUCTpos*, STRUCTgraph*, STRUCTcontroles*, STRUCTpersonaje*);
 short busquedaEvento(short, STRUCTpersonaje, STRUCTeventos*);
 int busquedaPuerta(short*, short*, STRUCTpersonaje*, STRUCTlink*);
-short colisiones(char);
-void pjmenu(STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*, short);
-void batalla(short, STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*);
+short colisiones(bool*, char);
+void pjmenu(STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*, short, STRUCTgraph, STRUCTpos);
+void batalla(bool*, short, STRUCTcontroles, STRUCTpersonaje*, STRUCTitem*);
 short menuFlecha(short, short, STRUCTcontroles);
 void defeat();
-void savegame(STRUCTcontroles, STRUCTpersonaje, short);
+void savegame(STRUCTcontroles, STRUCTpersonaje, short, STRUCTgraph, STRUCTpos);
 short loadgame(STRUCTcontroles, STRUCTitem**, STRUCTpersonaje*, short*);
 void intromenu(STRUCTitem**, STRUCTcontroles, STRUCTpersonaje*, short*);

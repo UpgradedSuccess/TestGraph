@@ -1,17 +1,33 @@
 ﻿#include "cabecera.h"
 #include <stdlib.h>
 
-void error(short err)
+void error(short err, short mapa)
 {
+	system("cls");
 	switch (err)
-		case 1:
-			printf("Error de memoria.\n");
-			exit(0);
+	{
+	case 1:
+		printf("Error de memoria.\n");
+		break;
+	case 2:
+		printf("Error al buscar la puerta. Revise el archivo links.txt\n");
+		break;
+	case 3:
+		printf("Error al buscar el NPC. Revise el archivo events%hd.txt\n", mapa);
+		break;
+	case 4:
+		printf("Error al abrir el archivo 'items.txt'\n");
+		break;
+	case 5:
+		printf("Error al abrir el archivo 'mapa%hd.txt'\n", mapa);
+		break;
+	}
+	getch();
+	exit(0);
 }
 
 void instrucciones()
 {
-	system("title TestGraph");
 	printf("Instrucciones por defecto:\n\n"
 		"Movimiento: 'wasd'\n"
 		"Interacción: 'e'\n"
@@ -33,5 +49,6 @@ void defeat()
 {
 	system("cls");
 	printf("\t\tHas muerto\n\n");
+	getch();
 	exit(0);
 }
