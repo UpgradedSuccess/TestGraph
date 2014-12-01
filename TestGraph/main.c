@@ -5,7 +5,7 @@ int main()
 	short numevento = 0, mapactual, numlink, numitems = 0, mov, bat;
 	char **map;
 	bool updatemap = true; // Usado para determinar cuándo hay que refrescar la pantalla.
-	bool update = true; // Usado para determinar cuándo hay que buscar una batalla.
+	bool update = false; // Usado para determinar cuándo hay que buscar una batalla.
 	STRUCTpos VISION, tamMapa = { 0 };
 	STRUCTgraph graph;
 	STRUCTcontroles controles;
@@ -23,19 +23,15 @@ int main()
 
 	do // Bucle principal.
 	{
-		if (update == true) // Únicamente puede haber batallas al moverse por terreno válido, no al salir del menú (Actualmente no rula).
+		bat = rand() % 25;
+		if (bat == 0 && update == true)
 		{
-			bat = rand() % 25;
-			if (bat == 0)
-			{
-				batalla(&update, numitems, controles, &personaje, items);
-				updatemap = true;
-			}
-			display(evento, VISION, tamMapa, graph, &personaje, map, updatemap, numevento, mapactual);
+			batalla(numitems, controles, &personaje, items);
+			updatemap = true;
 		}
-		else
-			update = true;
-		mov = movimiento(&update, numevento, &updatemap, map, &controles, &personaje, evento);
+		if (updatemap == true)
+			display(evento, VISION, tamMapa, graph, &personaje, map, numevento, mapactual);
+		mov = movimiento(numevento, map, &controles, &personaje, evento);
 		switch (mov) // El valor devuelto por la función movimiento determina si el personaje se ha movido a un terreno normal, a una puerta o se ha pulsado el menú.
 		{
 		case 1: // El personaje se ha movido a una puerta.
@@ -46,13 +42,25 @@ int main()
 				lectura(&numevento, &mapactual, &numlink, &tamMapa, &map, &evento, &puertas); // Se lee el mapa al que lleva la puerta.
 			}
 			else
-				error(2);
+				error(2, mapactual);
 			break;
 		case 2: // El personaje ha abierto el menú
+			update = false;
+			updatemap = true;
 			pjmenu(controles, &personaje, items, mapactual, graph, VISION);
 			break;
 		case 3: // El personaje ha abierto el menú de administrador.
+			update = false;
+			updatemap = true;
 			adminmenu(&VISION, &graph, &controles, &personaje);
+			break;
+		case 4:
+			update = false;
+			updatemap = false;
+			break;
+		case 5:
+			update = false;
+			updatemap = true;
 			break;
 		default: // El personaje se ha movido a un terreno normal.
 			break;
