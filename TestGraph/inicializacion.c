@@ -23,11 +23,11 @@ void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRU
 	graph->PJ = fgetc(FILEconfig);
 	fscanf(FILEconfig, "%hd", &VISION->X);
 	fscanf(FILEconfig, "%hd", &VISION->Y);
-	sprintf(cmdSize, "mode con: cols=36 lines=20");
+	sprintf(cmdSize, "mode con: cols=38 lines=20");
 	system(cmdSize);
 	FILEitems = fopen("data\\items.txt", "rt");
 	if (FILEitems == NULL)
-		error(4);
+		error(4, 0);
 	while (feof(FILEitems) == 0) // Conteo de objetos.
 	{
 		buffer = fgetc(FILEitems);
@@ -39,7 +39,7 @@ void inicializacion(short *numitems, STRUCTpos *VISION, STRUCTgraph *graph, STRU
 	}
 	(*items) = (STRUCTitem*)malloc((*numitems) * sizeof(STRUCTitem));
 	if ((*items) == NULL)
-		error(1);
+		error(1, 0);
 	rewind(FILEitems);
 	for (k = 0; k < (*numitems); k++) // Almacenado de objetos.
 	{

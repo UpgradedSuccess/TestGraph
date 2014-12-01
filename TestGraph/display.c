@@ -1,19 +1,15 @@
 ﻿#include "cabecera.h"
 
-void display(STRUCTeventos *evento, STRUCTpos VISION, STRUCTpos tamMapa, STRUCTgraph graph, STRUCTpersonaje *personaje, char **map, bool updatemap, short numevento, short mapactual)
+void display(STRUCTeventos *evento, STRUCTpos VISION, STRUCTpos tamMapa, STRUCTgraph graph, STRUCTpersonaje *personaje, char **map, short numevento, short mapactual)
 {
 	short k, i;
-	char **auxmap = 0, descripcion[10];
-	STRUCTpos aux;
+	char **auxmap = 0, descripcion[20];
+	STRUCTpos aux = { 0 };
 
-	if (updatemap == true)
-	{
 		system("cls");
 		auxmap = (char**)malloc((VISION.X + 2) * (VISION.Y + 1) * 4);
 		for (k = 0; k < tamMapa.X; k++)
 			auxmap[k] = (char*)malloc(VISION.X * 2 * sizeof(char));
-		aux.Y = 0;
-		aux.X = 0;
 
 		/* Bucle usado para guardar una parte del mapa 
 		(definida por VISION.X y VISION.Y) en un mapa auxiliar para poder mostrarlo correctamente. */
@@ -62,10 +58,9 @@ void display(STRUCTeventos *evento, STRUCTpos VISION, STRUCTpos tamMapa, STRUCTg
 		{
 			k = busquedaEvento(numevento, *personaje, evento); // Búsqueda del diálogo del NPC en el archivo events.txt
 			if (k == -1)
-				error(3);
+				error(3, mapactual);
 			strcpy(descripcion, evento[k].nombre);
 		}
 		printf("\nMapa: %hd\n%s", mapactual + 1, descripcion);
-	}
 	return;
 }
