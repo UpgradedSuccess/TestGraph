@@ -2,9 +2,9 @@
 #define mapFIL 6
 #define mapCOL 12
 
-void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
+void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
-	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0;
+	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0, movIA = 0;
 	char mov, **mapaBatalla;
 	FILE *FILEenemigos;
 	STRUCTpos pjBatalla;
@@ -110,7 +110,7 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 			{
 				if (j != l)
 				{
-					while (enemigosSPAWN[l].pos.X == enemigosSPAWN[j].pos.X && enemigosSPAWN[l].pos.Y == enemigosSPAWN[j].pos.Y)
+					while ((enemigosSPAWN[l].pos.X == enemigosSPAWN[j].pos.X && enemigosSPAWN[l].pos.Y == enemigosSPAWN[j].pos.Y) && (enemigosSPAWN[l].pos.X == pjBatalla.X && enemigosSPAWN[l].pos.Y == pjBatalla.Y))
 					{
 						enemigosSPAWN[l].pos.X = rand() % (mapCOL - 4) + 1;
 						enemigosSPAWN[l].pos.Y = rand() % (mapFIL - 2) + 1;
@@ -172,7 +172,7 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 					mov = getch();
 					if (mov == controles.UP)
 					{
-						if (colisiones(update1, mapaBatalla[pjBatalla.Y - 1][pjBatalla.X]) == 1)
+						if (colisiones(mapaBatalla[pjBatalla.Y - 1][pjBatalla.X]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.Y--;
@@ -181,7 +181,7 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 					}
 					else if (mov == controles.LEFT)
 					{
-						if (colisiones(update1, mapaBatalla[pjBatalla.Y][pjBatalla.X - 1]) == 1)
+						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X - 1]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.X--;
@@ -190,7 +190,7 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 					}
 					else if (mov == controles.DOWN)
 					{
-						if (colisiones(update1, mapaBatalla[pjBatalla.Y + 1][pjBatalla.X]) == 1)
+						if (colisiones(mapaBatalla[pjBatalla.Y + 1][pjBatalla.X]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.Y++;
@@ -199,7 +199,7 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 					}
 					else if (mov == controles.RIGHT)
 					{
-						if (colisiones(update1, mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]) == 1)
+						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]) == 1)
 						{
 							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
 							pjBatalla.X++;
@@ -367,124 +367,42 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 		else
 		{
 			Sleep(200);
-			if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1] == '*')
+			movIA = ia(enemigosSPAWN[turno - 1].pos, pjBatalla, mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1]);
+			switch (movIA)
 			{
+			case 0:
 				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
 				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
 				dmgdealt = rand() % RANDMAX + RANDMIN;
 				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
 				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
-				if (turno == numSpawn)
-					turno = 0;
-				else
-					turno++;
 				getch();
+				break;
+			case 1:
+				mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
+				enemigosSPAWN[turno - 1].pos.X++;
+				update = 1;
+				break;
+			case 2:
+				mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
+				enemigosSPAWN[turno - 1].pos.Y++;
+				update = 1;
+				break;
+			case 3:
+				mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
+				enemigosSPAWN[turno - 1].pos.X--;
+				update = 1;
+				break;
+			case 4:
+				mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
+				enemigosSPAWN[turno - 1].pos.Y--;
+				update = 1;
+				break;
 			}
-			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1] == '*')
-			{
-				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
-				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
-				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
-				if (turno == numSpawn)
-					turno = 0;
-				else
-					turno++;
-				getch();
-			}
-			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X] == '*')
-			{
-				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
-				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
-				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
-				if (turno == numSpawn)
-					turno = 0;
-				else
-					turno++;
-				getch();
-			}
-			else if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X] == '*')
-			{
-				RANDMIN = enemigosSPAWN[turno - 1].minDmg;
-				RANDMAX = enemigosSPAWN[turno - 1].maxDmg - enemigosSPAWN[turno - 1].minDmg;
-				dmgdealt = rand() % RANDMAX + RANDMIN;
-				personaje->HPLEFT = personaje->HPLEFT - dmgdealt;
-				printf("\nHas recibido %hd de daño de %s!\n\t|\n\tv", dmgdealt, enemigosSPAWN[turno - 1].nombre);
-				if (turno == numSpawn)
-					turno = 0;
-				else
-					turno++;
-				getch();
-			}
+			if (turno == numSpawn)
+				turno = 0;
 			else
-			{
-				if (enemigosSPAWN[turno - 1].pos.X < pjBatalla.X)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1]  == '-')
-					{
-						update = 1;
-						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
-						enemigosSPAWN[turno - 1].pos.X++;
-						if (turno == numSpawn)
-							turno = 0;
-						else
-							turno++;
-						continue;
-					}
-				}
-				if (enemigosSPAWN[turno - 1].pos.X > pjBatalla.X)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1] == '-')
-					{
-						update = 1;
-						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
-						enemigosSPAWN[turno - 1].pos.X--;
-						if (turno == numSpawn)
-							turno = 0;
-						else
-							turno++;
-						continue;
-					}
-				}
-				if (enemigosSPAWN[turno - 1].pos.Y < pjBatalla.Y)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X] == '-')
-					{
-						update = 1;
-						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
-						enemigosSPAWN[turno - 1].pos.Y++;
-						if (turno == numSpawn)
-							turno = 0;
-						else
-							turno++;
-						continue;
-					}
-				}
-				if (enemigosSPAWN[turno - 1].pos.Y > pjBatalla.Y)
-				{
-					if (mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X]  == '-')
-					{
-						update = 1;
-						mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X] = '-';
-						enemigosSPAWN[turno - 1].pos.Y--;
-						if (turno == numSpawn)
-							turno = 0;
-						else
-							turno++;
-						continue;
-					}
-				}
-				else
-				{
-					if (turno == numSpawn)
-						turno = 0;
-					else
-						turno++;
-				}
-			}
+				turno++;
 		}
 		if (flecha == -1 || flecha == -2)
 		{
@@ -495,4 +413,44 @@ void batalla(bool *update1, short numitems, STRUCTcontroles controles, STRUCTper
 	free(enemigosSPAWN);
 	free(enemigos);
 	return;
+}
+
+int ia(STRUCTpos posEnemigo, STRUCTpos posPersonaje, char UP, char DOWN, char RIGHT, char LEFT)
+{
+	boolean flag = false;
+
+	if (posEnemigo.X < posPersonaje.X || flag == true)
+	{
+		if (RIGHT == '*')
+			return 0;
+		else if (RIGHT == '-')
+			return 1;
+		flag = true;
+	}
+	if (posEnemigo.Y < posPersonaje.Y || flag == true)
+	{
+		if (DOWN == '*')
+			return 0;
+		else if (DOWN == '-')
+			return 2;
+		flag = true;
+	}
+	if (posEnemigo.X > posPersonaje.X || flag == true)
+	{
+		if (LEFT == '*')
+			return 0;
+		else if (LEFT == '-')
+			return 3;
+		flag = true;
+	}
+	if (posEnemigo.Y > posPersonaje.Y || flag == true)
+	{
+		if (UP == '*')
+			return 0;
+		else if (UP == '-')
+			return 4;
+		flag = true;
+	}
+	error(6, 0);
+	return 0;
 }
