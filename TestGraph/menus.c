@@ -110,6 +110,7 @@ void adminmenu(STRUCTpos *VISION, STRUCTgraph *graph, STRUCTcontroles *controles
 void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items, short mapactual, STRUCTgraph graph, STRUCTpos VISION)
 {
 	short flecha = 1, k, i = 1, aux = 0, sel, update = 1;
+	char salir;
 
 	do
 	{
@@ -132,10 +133,13 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 			if (flecha == 5)
 				printf("->");
 			printf("  Guardar partida\n");
+			if (flecha == 6)
+				printf("->");
+			printf("  Salir\n");
 		}
 		update = 1;
 		sel = flecha;
-		flecha = menuFlecha(5, flecha, controles);
+		flecha = menuFlecha(6, flecha, controles);
 		if (flecha == 0)
 		{
 			switch (sel)
@@ -214,6 +218,14 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 			case 5:
 				savegame(controles, *personaje, mapactual, graph, VISION);
 				break;
+			case 6:
+				system("cls");
+				printf("¿Está seguro de que desea salir?\nAsegúrese de haber guardado antes.\n\n(S/N): ");
+				salir = getch();
+				if (salir == 's')
+					exit(0);
+				else
+					break;
 			default:
 				break;
 			}
