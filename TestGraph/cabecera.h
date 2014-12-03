@@ -126,3 +126,4 @@ void savegame(STRUCTcontroles, STRUCTpersonaje, short, STRUCTgraph, STRUCTpos);
 short loadgame(STRUCTcontroles, STRUCTitem**, STRUCTpersonaje*, short*);
 void intromenu(STRUCTitem**, STRUCTcontroles, STRUCTpersonaje*, short*);
 int ia(STRUCTpos, STRUCTpos, char, char, char, char);
+short parsemov(STRUCTcontroles, char, char, char, char);

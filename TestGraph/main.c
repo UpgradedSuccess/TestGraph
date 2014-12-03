@@ -62,6 +62,10 @@ int main()
 			update = false;
 			updatemap = true;
 			break;
+		case 6:
+			update = true;
+			updatemap = true;
+			break;
 		default: // El personaje se ha movido a un terreno normal.
 			break;
 		}

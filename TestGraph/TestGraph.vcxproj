@@ -83,7 +83,6 @@
     <ClCompile Include="batalla.c" />
     <ClCompile Include="busquedaEvento.c" />
     <ClCompile Include="busquedaPuerta.c" />
-    <ClCompile Include="colisiones.c" />
     <ClCompile Include="inicializacion.c" />
     <ClCompile Include="menus.c" />
     <ClCompile Include="movimiento.c" />

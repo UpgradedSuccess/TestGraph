@@ -4,8 +4,8 @@
 
 void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *items)
 {
-	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0, movIA = 0;
-	char mov, **mapaBatalla;
+	short k, i, j, l, m, RANDMAX, RANDMIN, numSpawn = 0, turno = 0, flecha = 1, update = 1, sel, printEnemy[4], numprintEnemy, dmgdealt, numenemigos = 0, movIA = 0, direccion;
+	char **mapaBatalla;
 	FILE *FILEenemigos;
 	STRUCTpos pjBatalla;
 	STRUCTenemigos *enemigos;
@@ -169,42 +169,33 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 				case 1:
 					update = 1;
 					printf("\nElige sitio al que mover.");
-					mov = getch();
-					if (mov == controles.UP)
+					direccion = parsemov(controles, mapaBatalla[pjBatalla.Y - 1][pjBatalla.X], mapaBatalla[pjBatalla.Y + 1][pjBatalla.X], mapaBatalla[pjBatalla.Y][pjBatalla.X - 1], mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]);
+					switch (direccion)
 					{
-						if (colisiones(mapaBatalla[pjBatalla.Y - 1][pjBatalla.X]) == 1)
-						{
-							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
-							pjBatalla.Y--;
-							turno++;
-						}
-					}
-					else if (mov == controles.LEFT)
-					{
-						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X - 1]) == 1)
-						{
-							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
-							pjBatalla.X--;
-							turno++;
-						}
-					}
-					else if (mov == controles.DOWN)
-					{
-						if (colisiones(mapaBatalla[pjBatalla.Y + 1][pjBatalla.X]) == 1)
-						{
-							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
-							pjBatalla.Y++;
-							turno++;
-						}
-					}
-					else if (mov == controles.RIGHT)
-					{
-						if (colisiones(mapaBatalla[pjBatalla.Y][pjBatalla.X + 1]) == 1)
-						{
-							mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
-							pjBatalla.X++;
-							turno++;
-						}
+					case 0:
+						break;
+					case 1:
+						mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
+						pjBatalla.Y--;
+						turno++;
+						break;
+					case 2:
+						mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
+						pjBatalla.X--;
+						turno++;
+						break;
+					case 3:
+						mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
+						pjBatalla.Y++;
+						turno++;
+						break;
+					case 4:
+						mapaBatalla[pjBatalla.Y][pjBatalla.X] = '-';
+						pjBatalla.X++;
+						turno++;
+						break;
+					default:
+						error(6, 0);
 					}
 					break;
 				case 2:
@@ -214,47 +205,15 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 					{
 						for (l = 0; l < numSpawn; l++)
 						{
-							if (pjBatalla.X + 1 == enemigosSPAWN[l].pos.X)
+							if (pjBatalla.X + 1 == enemigosSPAWN[l].pos.X || pjBatalla.X - 1 == enemigosSPAWN[l].pos.X || pjBatalla.Y + 1 == enemigosSPAWN[l].pos.Y || pjBatalla.Y - 1 == enemigosSPAWN[l].pos.Y)
 							{
-								if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
+								if (pjBatalla.Y == enemigosSPAWN[l].pos.Y || pjBatalla.X == enemigosSPAWN[l].pos.X)
 								{
 									printEnemy[numprintEnemy] = l;
 									numprintEnemy++;
 								}
 							}
-						}
-						for (l = 0; l < numSpawn; l++)
-						{
-							if (pjBatalla.X - 1 == enemigosSPAWN[l].pos.X)
-							{
-								if (pjBatalla.Y == enemigosSPAWN[l].pos.Y)
-								{
-									printEnemy[numprintEnemy] = l;
-									numprintEnemy++;
-								}
-							}
-						}
-						for (l = 0; l < numSpawn; l++)
-						{
-							if (pjBatalla.Y + 1 == enemigosSPAWN[l].pos.Y)
-							{
-								if (pjBatalla.X == enemigosSPAWN[l].pos.X)
-								{
-									printEnemy[numprintEnemy] = l;
-									numprintEnemy++;
-								}
-							}
-						}
-						for (l = 0; l < numSpawn; l++)
-						{
-							if (pjBatalla.Y - 1 == enemigosSPAWN[l].pos.Y)
-							{
-								if (pjBatalla.X == enemigosSPAWN[l].pos.X)
-								{
-									printEnemy[numprintEnemy] = l;
-									numprintEnemy++;
-								}
-							}
+
 						}
 					}
 					else
