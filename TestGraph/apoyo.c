@@ -23,6 +23,7 @@ void error(short err, short mapa)
 		break;
 	case 6:
 		printf("Error desconocido.");
+		break;
 	}
 	getch();
 	exit(0);

@@ -135,11 +135,14 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 			printf("  Guardar partida\n");
 			if (flecha == 6)
 				printf("->");
+			printf("  Menú Principal\n");
+			if (flecha == 7)
+				printf("->");
 			printf("  Salir\n");
 		}
 		update = 1;
 		sel = flecha;
-		flecha = menuFlecha(6, flecha, controles);
+		flecha = menuFlecha(7, flecha, controles);
 		if (flecha == 0)
 		{
 			switch (sel)
@@ -219,6 +222,14 @@ void pjmenu(STRUCTcontroles controles, STRUCTpersonaje *personaje, STRUCTitem *i
 				savegame(controles, *personaje, mapactual, graph, VISION);
 				break;
 			case 6:
+				system("cls");
+				printf("¿Está seguro de que desea salir?\nAsegúrese de haber guardado antes.\n\n(S/N): ");
+				salir = getch();
+				if (salir == 's')
+					main();
+				else
+					break;
+			case 7:
 				system("cls");
 				printf("¿Está seguro de que desea salir?\nAsegúrese de haber guardado antes.\n\n(S/N): ");
 				salir = getch();
