@@ -195,7 +195,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 						turno++;
 						break;
 					default:
-						error(6, 0);
+						break;
 					}
 					break;
 				case 2:
@@ -326,7 +326,7 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 		else
 		{
 			Sleep(200);
-			movIA = ia(enemigosSPAWN[turno - 1].pos, pjBatalla, mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1]);
+			movIA = ia(enemigosSPAWN[turno - 1].pos, pjBatalla, mapaBatalla[enemigosSPAWN[turno - 1].pos.Y - 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y + 1][enemigosSPAWN[turno - 1].pos.X], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X + 1], mapaBatalla[enemigosSPAWN[turno - 1].pos.Y][enemigosSPAWN[turno - 1].pos.X - 1], &enemigosSPAWN[turno - 1].last);
 			switch (movIA)
 			{
 			case 0:
@@ -380,9 +380,9 @@ void batalla(short numitems, STRUCTcontroles controles, STRUCTpersonaje *persona
 	return;
 }
 
-int ia(STRUCTpos posEnemigo, STRUCTpos posPersonaje, char UP, char DOWN, char RIGHT, char LEFT)
+int ia(STRUCTpos posEnemigo, STRUCTpos posPersonaje, char UP, char DOWN, char RIGHT, char LEFT, short *last)
 {
-	boolean flag = false;
+	boolean flag = false, cantmove = false;
 
 	if (RIGHT != '-' && UP != '-' && LEFT != '-' && DOWN != '-')
 		return 5;
@@ -390,45 +390,79 @@ int ia(STRUCTpos posEnemigo, STRUCTpos posPersonaje, char UP, char DOWN, char RI
 	{
 		do
 		{
-			if (posEnemigo.X < posPersonaje.X || flag == true)
+			cantmove = true;
+			if ((posEnemigo.X < posPersonaje.X || flag == true) && *last != 1)
 			{
+				cantmove = false;
 				flag = false;
 				if (RIGHT == '*')
 					return 0;
 				else if (RIGHT == '-')
+				{
+					*last = 3;
 					return 1;
+				}
 				else
+				{
+					cantmove = true;
 					flag = true;
+				}
 			}
-			if (posEnemigo.Y < posPersonaje.Y || flag == true)
+			if ((posEnemigo.Y < posPersonaje.Y || flag == true) && *last != 2)
 			{
+				cantmove = false;
 				flag = false;
 				if (DOWN == '*')
 					return 0;
 				else if (DOWN == '-')
+				{
+					*last = 4;
 					return 2;
+				}
 				else
+				{
+					cantmove = true;
 					flag = true;
+				}
 			}
-			if (posEnemigo.X > posPersonaje.X || flag == true)
+			if ((posEnemigo.X > posPersonaje.X || flag == true) && *last != 3)
 			{
+				cantmove = false;
 				flag = false;
 				if (LEFT == '*')
 					return 0;
 				else if (LEFT == '-')
+				{
+					*last = 1;
 					return 3;
+				}
 				else
+				{
+					cantmove = true;
 					flag = true;
+				}
 			}
-			if (posEnemigo.Y > posPersonaje.Y || flag == true)
+			if ((posEnemigo.Y > posPersonaje.Y || flag == true) && *last != 4)
 			{
+				cantmove = false;
 				flag = false;
 				if (UP == '*')
 					return 0;
 				else if (UP == '-')
+				{
+					*last = 2;
 					return 4;
+				}
 				else
+				{
+					cantmove = true;
 					flag = true;
+				}
+			}
+			if (cantmove == true && flag == false)
+			{
+				*last = 0;
+				return 5;
 			}
 		} while (1);
 	}

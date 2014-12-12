@@ -70,6 +70,7 @@ typedef struct
 	char graph;
 	short drop;
 	short dropChance;
+	short last;
 	STRUCTpos pos;
 } STRUCTenemigosSPAWN;
 typedef struct
@@ -125,5 +126,5 @@ void defeat();
 void savegame(STRUCTcontroles, STRUCTpersonaje, short, STRUCTgraph, STRUCTpos);
 short loadgame(STRUCTcontroles, STRUCTitem**, STRUCTpersonaje*, short*);
 void intromenu(STRUCTitem**, STRUCTcontroles, STRUCTpersonaje*, short*);
-int ia(STRUCTpos, STRUCTpos, char, char, char, char);
+int ia(STRUCTpos, STRUCTpos, char, char, char, char, char*);
 short parsemov(STRUCTcontroles, char, char, char, char);
